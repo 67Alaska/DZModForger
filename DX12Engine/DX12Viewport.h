@@ -9,7 +9,7 @@
 extern const GUID IID_ID3D12Viewport;
 
 // CLSID_DX12Viewport - Class identifier for the COM object
-// {B2C3D4E5-F6A7-5B9C-8D9E-7F6G5H4I3J2K}
+// {B2C3D4E5-F6A7-5B9C-8D9E-7F6E5D4C3B2A}
 extern const GUID CLSID_DX12Viewport;
 
 // ==================== VERTEX STRUCTURE ====================

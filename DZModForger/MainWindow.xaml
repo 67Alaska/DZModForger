@@ -5,9 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DZModForger"
     xmlns:interop="using:DZModForger.Interop"
-    Title="DZModForger - Professional 3D Model Editor"
-    Width="1920"
-    Height="1080">
+    Title="DZModForger - Professional 3D Model Editor">
 
     <Grid Background="{StaticResource BackgroundBrush}">
         <Grid.RowDefinitions>

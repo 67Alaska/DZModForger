@@ -28,6 +28,7 @@ namespace DZModForger
             this.InitializeComponent();
 
             this.Title = "DZModForger - Professional 3D Model Editor";
+            this.Loaded += OnWindowLoaded;
             this.Closed += OnWindowClosed;
 
             Debug.WriteLine("[MAINWINDOW] MainWindow initialized");

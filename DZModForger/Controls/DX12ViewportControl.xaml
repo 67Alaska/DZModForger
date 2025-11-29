@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿ ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
     x:Class="DZModForger.Controls.DX12ViewportControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -10,14 +10,14 @@
     BorderBrush="#FF3F3F3F"
     BorderThickness="1">
 
-	<Grid Background="#FF0D0D0D">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
+    <Grid Background="#FF0D0D0D">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-		<!-- Main Viewport Canvas -->
-		<Canvas
+        <!-- Main Viewport Canvas -->
+        <Canvas
             Grid.Row="0"
             x:Name="ViewportCanvas"
             Background="#FF1A1A1A"
@@ -28,16 +28,16 @@
             MouseRightButtonDown="ViewportCanvas_MouseRightButtonDown"
             MouseRightButtonUp="ViewportCanvas_MouseRightButtonUp">
 
-			<!-- Viewport Overlay Info -->
-			<StackPanel
+            <!-- Viewport Overlay Info -->
+            <StackPanel
                 Canvas.Left="12"
                 Canvas.Top="12"
                 Orientation="Vertical"
                 Spacing="4"
                 Panel.ZIndex="10">
 
-				<!-- FPS Counter -->
-				<TextBlock
+                <!-- FPS Counter -->
+                <TextBlock
                     x:Name="FPSCounter"
                     Text="FPS: 120"
                     Foreground="#FF4FC3F7"
@@ -45,43 +45,43 @@
                     FontWeight="SemiBold"
                     FontFamily="Courier New"/>
 
-				<!-- Resolution Display -->
-				<TextBlock
+                <!-- Resolution Display -->
+                <TextBlock
                     x:Name="ResolutionDisplay"
                     Text="1600 x 1000"
                     Foreground="#FFA0A0A0"
                     FontSize="11"
                     FontFamily="Courier New"/>
 
-				<!-- Camera Info -->
-				<TextBlock
+                <!-- Camera Info -->
+                <TextBlock
                     x:Name="CameraInfo"
                     Text="Cam: (0.0, 0.0, 5.0)"
                     Foreground="#FFA0A0A0"
                     FontSize="11"
                     FontFamily="Courier New"/>
 
-				<!-- Grid Indicator -->
-				<TextBlock
+                <!-- Grid Indicator -->
+                <TextBlock
                     x:Name="GridIndicator"
                     Text="Grid: ON"
                     Foreground="#FF00FF00"
                     FontSize="11"
                     FontWeight="SemiBold"
                     FontFamily="Courier New"/>
-			</StackPanel>
+            </StackPanel>
 
-			<!-- Viewport Controls (Top Right) -->
-			<StackPanel
+            <!-- Viewport Controls (Top Right) -->
+            <StackPanel
                 Canvas.Right="12"
                 Canvas.Top="12"
                 Orientation="Vertical"
                 Spacing="8"
                 Panel.ZIndex="10">
 
-				<!-- View Preset Buttons -->
-				<StackPanel Orientation="Horizontal" Spacing="4">
-					<Button
+                <!-- View Preset Buttons -->
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button
                         x:Name="BtnViewFront"
                         Content="⬅ Front"
                         Width="70"
@@ -92,7 +92,7 @@
                         FontSize="11"
                         ToolTipService.ToolTip="Front View (F)"/>
 
-					<Button
+                    <Button
                         x:Name="BtnViewTop"
                         Content="⬆ Top"
                         Width="70"
@@ -103,7 +103,7 @@
                         FontSize="11"
                         ToolTipService.ToolTip="Top View (T)"/>
 
-					<Button
+                    <Button
                         x:Name="BtnViewSide"
                         Content="➡ Side"
                         Width="70"
@@ -114,7 +114,7 @@
                         FontSize="11"
                         ToolTipService.ToolTip="Side View (S)"/>
 
-					<Button
+                    <Button
                         x:Name="BtnViewIso"
                         Content="⬈ ISO"
                         Width="70"
@@ -124,11 +124,11 @@
                         Click="BtnViewIso_Click"
                         FontSize="11"
                         ToolTipService.ToolTip="Isometric View (I)"/>
-				</StackPanel>
+                </StackPanel>
 
-				<!-- Shading Mode Buttons -->
-				<StackPanel Orientation="Horizontal" Spacing="4">
-					<Button
+                <!-- Shading Mode Buttons -->
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button
                         x:Name="BtnWireframe"
                         Content="🔲 Wire"
                         Width="70"
@@ -139,7 +139,7 @@
                         FontSize="11"
                         ToolTipService.ToolTip="Wireframe Mode"/>
 
-					<Button
+                    <Button
                         x:Name="BtnSolid"
                         Content="⬤ Solid"
                         Width="70"
@@ -151,7 +151,7 @@
                         FontWeight="SemiBold"
                         ToolTipService.ToolTip="Solid Shading"/>
 
-					<Button
+                    <Button
                         x:Name="BtnMaterial"
                         Content="🎨 Mat"
                         Width="70"
@@ -162,7 +162,7 @@
                         FontSize="11"
                         ToolTipService.ToolTip="Material Mode"/>
 
-					<Button
+                    <Button
                         x:Name="BtnRender"
                         Content="💡 Render"
                         Width="70"
@@ -172,19 +172,19 @@
                         Click="BtnRender_Click"
                         FontSize="11"
                         ToolTipService.ToolTip="Render Mode"/>
-				</StackPanel>
-			</StackPanel>
+                </StackPanel>
+            </StackPanel>
 
-			<!-- Center Crosshair -->
-			<Canvas
+            <!-- Center Crosshair -->
+            <Canvas
                 Canvas.Left="800"
                 Canvas.Top="500"
                 Width="40"
                 Height="40"
                 Panel.ZIndex="5">
 
-				<!-- Horizontal Line -->
-				<Line
+                <!-- Horizontal Line -->
+                <Line
                     X1="0"
                     Y1="20"
                     X2="40"
@@ -193,8 +193,8 @@
                     StrokeThickness="1"
                     Opacity="0.3"/>
 
-				<!-- Vertical Line -->
-				<Line
+                <!-- Vertical Line -->
+                <Line
                     X1="20"
                     Y1="0"
                     X2="20"
@@ -203,26 +203,26 @@
                     StrokeThickness="1"
                     Opacity="0.3"/>
 
-				<!-- Center Dot -->
-				<Ellipse
+                <!-- Center Dot -->
+                <Ellipse
                     Canvas.Left="18"
                     Canvas.Top="18"
                     Width="4"
                     Height="4"
                     Fill="#FF4FC3F7"
                     Opacity="0.5"/>
-			</Canvas>
+            </Canvas>
 
-			<!-- Bottom Left Controls -->
-			<StackPanel
+            <!-- Bottom Left Controls -->
+            <StackPanel
                 Canvas.Left="12"
                 Canvas.Bottom="12"
                 Orientation="Horizontal"
                 Spacing="8"
                 Panel.ZIndex="10">
 
-				<!-- Grid Toggle -->
-				<CheckBox
+                <!-- Grid Toggle -->
+                <CheckBox
                     x:Name="ChkShowGrid"
                     Content="Show Grid"
                     Foreground="#FFFFFFFF"
@@ -232,8 +232,8 @@
                     VerticalAlignment="Center"
                     FontSize="12"/>
 
-				<!-- Axes Toggle -->
-				<CheckBox
+                <!-- Axes Toggle -->
+                <CheckBox
                     x:Name="ChkShowAxes"
                     Content="Show Axes"
                     Foreground="#FFFFFFFF"
@@ -243,8 +243,8 @@
                     VerticalAlignment="Center"
                     FontSize="12"/>
 
-				<!-- Bounds Toggle -->
-				<CheckBox
+                <!-- Bounds Toggle -->
+                <CheckBox
                     x:Name="ChkShowBounds"
                     Content="Show Bounds"
                     Foreground="#FFFFFFFF"
@@ -253,10 +253,10 @@
                     Unchecked="ChkShowBounds_Unchecked"
                     VerticalAlignment="Center"
                     FontSize="12"/>
-			</StackPanel>
+            </StackPanel>
 
-			<!-- Bottom Right Stats -->
-			<StackPanel
+            <!-- Bottom Right Stats -->
+            <StackPanel
                 Canvas.Right="12"
                 Canvas.Bottom="12"
                 Orientation="Vertical"
@@ -264,7 +264,7 @@
                 Panel.ZIndex="10"
                 HorizontalAlignment="Right">
 
-				<TextBlock
+                <TextBlock
                     x:Name="StatVertices"
                     Text="Vertices: 0"
                     Foreground="#FFA0A0A0"
@@ -272,7 +272,7 @@
                     FontFamily="Courier New"
                     TextAlignment="Right"/>
 
-				<TextBlock
+                <TextBlock
                     x:Name="StatFaces"
                     Text="Faces: 0"
                     Foreground="#FFA0A0A0"
@@ -280,17 +280,17 @@
                     FontFamily="Courier New"
                     TextAlignment="Right"/>
 
-				<TextBlock
+                <TextBlock
                     x:Name="StatGPUMemory"
                     Text="GPU Memory: 0 MB"
                     Foreground="#FFA0A0A0"
                     FontSize="10"
                     FontFamily="Courier New"
                     TextAlignment="Right"/>
-			</StackPanel>
+            </StackPanel>
 
-			<!-- Help Text (Center Bottom) -->
-			<TextBlock
+            <!-- Help Text (Center Bottom) -->
+            <TextBlock
                 Canvas.Bottom="12"
                 Canvas.Left="0"
                 Canvas.Right="0"
@@ -300,10 +300,10 @@
                 TextAlignment="Center"
                 Panel.ZIndex="10"
                 FontStyle="Italic"/>
-		</Canvas>
+        </Canvas>
 
-		<!-- Status Bar -->
-		<Border
+        <!-- Status Bar -->
+        <Border
             Grid.Row="1"
             Background="#FF252525"
             BorderBrush="#FF3F3F3F"
@@ -311,14 +311,14 @@
             Height="24"
             Padding="8,0">
 
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-				<TextBlock
+                <TextBlock
                     Grid.Column="0"
                     x:Name="StatusText"
                     Text="Ready"
@@ -326,7 +326,7 @@
                     FontSize="11"
                     VerticalAlignment="Center"/>
 
-				<TextBlock
+                <TextBlock
                     Grid.Column="1"
                     x:Name="ViewportMode"
                     Text="Solid Mode"
@@ -335,14 +335,14 @@
                     VerticalAlignment="Center"
                     Margin="0,0,16,0"/>
 
-				<TextBlock
+                <TextBlock
                     Grid.Column="2"
                     x:Name="ViewportInfo"
                     Text="DirectX 12 | v1.0"
                     Foreground="#FFA0A0A0"
                     FontSize="11"
                     VerticalAlignment="Center"/>
-			</Grid>
-		</Border>
-	</Grid>
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

@@ -4,6 +4,7 @@
 #ifndef PCH_H
 #define PCH_H
 
+#include "pch.h"
 // ==================== WINDOWS SDK ====================
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

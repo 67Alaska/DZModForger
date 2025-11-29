@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using UltimateDZForge.ViewModels;
+using DZModForger.ViewModels;
 
 namespace DZModForger.Services
 {
