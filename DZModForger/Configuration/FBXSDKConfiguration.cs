@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace UltimateDZForge.Configuration
+namespace DZModForger.Configuration
 {
     /// <summary>
     /// FBX SDK Configuration and Validation

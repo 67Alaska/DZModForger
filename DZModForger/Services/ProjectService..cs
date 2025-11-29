@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UltimateDZForge.ViewModels;
 
-namespace UltimateDZForge.Services
+namespace DZModForger.Services
 {
     /// <summary>
     /// Service for managing DZForge projects (save/load/export)

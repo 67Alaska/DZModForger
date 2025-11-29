@@ -4,7 +4,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="DX12Engine/DX12Engine.vcxproj">
+  <Project Path="DX12Engine/DX12Engine.vcxproj" Id="d0b77a60-77a5-4344-bcb4-68d0ea8180ce">
     <Platform Solution="*|ARM64" Project="x64" />
   </Project>
   <Project Path="DZModForger/DZModForger.csproj">

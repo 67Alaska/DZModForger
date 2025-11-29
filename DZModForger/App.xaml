@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Application
-    x:Class="UltimateDZForge.App"
+    x:Class="DZModForger.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:UltimateDZForge">
+    xmlns:local="using:DZModForger">
 
     <Application.Resources>
         <!-- ==================== COLOR PALETTE ==================== -->
@@ -194,7 +194,7 @@
 
         <!-- ==================== SEPARATOR STYLES ==================== -->
 
-        <Style x:Key="SeparatorStyle" TargetType="Separator">
+        <Style x:Key="SeparatorStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource BorderBrush}"/>
             <Setter Property="Height" Value="1"/>
             <Setter Property="Margin" Value="0,8"/>
@@ -211,23 +211,6 @@
         <Style x:Key="MenuItemStyle" TargetType="MenuFlyoutItem">
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
             <Setter Property="FontSize" Value="{StaticResource FontSizeBase}"/>
-        </Style>
-
-        <!-- ==================== NUMBERBOX STYLES ==================== -->
-
-        <Style x:Key="NumberBoxStyle" TargetType="NumberBox">
-            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-            <Setter Property="FontSize" Value="{StaticResource FontSizeBase}"/>
-        </Style>
-
-        <!-- ==================== PROGRESSBAR STYLES ==================== -->
-
-        <Style x:Key="ProgressBarStyle" TargetType="ProgressBar">
-            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
-            <Setter Property="Height" Value="4"/>
         </Style>
 
         <!-- ==================== ANIMATION RESOURCES ==================== -->

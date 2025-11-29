@@ -1,47 +1,56 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using UltimateDZForge.Configuration;
+using DZModForger.Configuration;
 
-namespace UltimateDZForge
+namespace DZModForger
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
+    /// Main entry point for DZModForger with FBX SDK validation and initialization
     /// </summary>
     public partial class App : Application
     {
-        private Window m_window;
+        private Window _mainWindow;
 
         /// <summary>
         /// Initializes the singleton application object.
+        /// This is the first line of authored code executed, and as such is the logical
+        /// equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            this.DebugSettings.EnableRedrawRegions = false;
+            this.Resuming += OnResuming;
 
-            // Validate FBX SDK on initialization
-            Debug.WriteLine("[APP] Initializing UltimateDZForge 1.0.0");
+            Debug.WriteLine("[APP] ====================================");
+            Debug.WriteLine("[APP] Initializing DZModForger 1.0.0");
+            Debug.WriteLine("[APP] ====================================");
+            Debug.WriteLine($"[APP] Build Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            Debug.WriteLine($"[APP] Platform: {Package.Current.Id.Architecture}");
+
+            // Log FBX SDK configuration
             Debug.WriteLine("[APP] ====================================");
             FBXSDKConfiguration.LogConfiguration();
             Debug.WriteLine("[APP] ====================================");
 
+            // Validate FBX SDK installation
             var (isValid, error) = FBXSDKConfiguration.ValidateInstallation();
             if (!isValid)
             {
                 Debug.WriteLine($"[APP] ⚠️  WARNING: FBX SDK validation failed!");
                 Debug.WriteLine($"[APP] Error: {error}");
                 Debug.WriteLine($"[APP] Expected path: {FBXSDKConfiguration.InstallPath}");
+                Debug.WriteLine("[APP] Application will continue with limited model loading support");
             }
             else
             {
                 Debug.WriteLine("[APP] ✅ FBX SDK validated successfully");
                 var sdkInfo = FBXSDKConfiguration.GetSDKInfo();
-                Debug.WriteLine($"[APP] Version: {sdkInfo.Version}");
+                Debug.WriteLine($"[APP] SDK Version: {sdkInfo.Version}");
                 Debug.WriteLine($"[APP] DLLs Found: {sdkInfo.DLLCount}");
                 Debug.WriteLine($"[APP] Headers Found: {sdkInfo.HeaderCount}");
             }
@@ -60,16 +69,21 @@ namespace UltimateDZForge
                 Debug.WriteLine("[APP] Application launched");
                 Debug.WriteLine("[APP] ====================================");
 
-                if (m_window == null)
+                if (_mainWindow == null)
                 {
-                    m_window = new MainWindow();
+                    _mainWindow = new MainWindow();
                     Debug.WriteLine("[APP] MainWindow created successfully");
                 }
 
                 // Ensure the window is active
-                m_window.Activate();
+                _mainWindow.Activate();
                 Debug.WriteLine("[APP] MainWindow activated");
+
+                // Log window info
+                Debug.WriteLine($"[APP] Window Title: {_mainWindow.Title}");
                 Debug.WriteLine("[APP] Application startup complete");
+
+                Debug.WriteLine("[APP] ====================================");
             }
             catch (Exception ex)
             {
@@ -81,65 +95,5 @@ namespace UltimateDZForge
 
         /// <summary>
         /// Invoked when application execution is being suspended.
-        /// </summary>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            Debug.WriteLine("[APP] Application suspending");
-            var deferral = e.SuspendingOperation.GetDeferral();
-
-            try
-            {
-                // Save application state if needed
-                Debug.WriteLine("[APP] Saving application state");
-
-                // Save settings
-                AppSettings.WindowMaximized = m_window.Content is Frame;
-                Debug.WriteLine("[APP] Application state saved");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[APP] ❌ Exception during suspend: {ex.Message}");
-            }
-            finally
-            {
-                deferral.Complete();
-                Debug.WriteLine("[APP] Application suspended");
-            }
-        }
-
-        /// <summary>
-        /// Invoked when application execution is being resumed.
-        /// </summary>
-        private void OnResuming(object sender, object e)
-        {
-            Debug.WriteLine("[APP] Application resuming");
-            Debug.WriteLine("[APP] Application resumed");
-        }
-
-        /// <summary>
-        /// Gets the current application instance
-        /// </summary>
-        public static new App Current => (App)Application.Current;
-
-        /// <summary>
-        /// Gets the main application window
-        /// </summary>
-        public Window MainWindow => m_window;
-
-        /// <summary>
-        /// Gets FBX SDK configuration info
-        /// </summary>
-        public SDKInfo GetFBXSDKInfo()
-        {
-            return FBXSDKConfiguration.GetSDKInfo();
-        }
-
-        /// <summary>
-        /// Validates FBX SDK installation
-        /// </summary>
-        public (bool IsValid, string ErrorMessage) ValidateFBXSDK()
-        {
-            return FBXSDKConfiguration.ValidateInstallation();
-        }
-    }
-}
+        /// Application state is saved without knowing whether the application will be
+        /// terminated or resumed with the contents of memory still

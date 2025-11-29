@@ -1,11 +1,11 @@
-﻿using Microsoft.UI.Xaml.Media.Media3D;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using DZModForger.Models;
 
-namespace UltimateDZForge.ViewModels
+namespace DZModForger.ViewModels
 {
     /// <summary>
     /// Shell ViewModel - MVVM core for main application state and commands

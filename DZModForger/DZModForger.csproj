@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>DZModForger</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -59,6 +59,9 @@
     <PackageReference Include="SharpDX.Direct3D12" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DX12Engine\DX12Engine.vcxproj" />
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -76,4 +79,7 @@
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
   </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if exist &quot;$(SolutionDir)DX12Engine\$(Configuration)\DX12Engine.dll&quot; (&#xD;&#xA;    echo Copying DX12Engine.dll to output directory...&#xD;&#xA;    xcopy /Y /I &quot;$(SolutionDir)DX12Engine\$(Configuration)\DX12Engine.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;)" />
+  </Target>
 </Project>

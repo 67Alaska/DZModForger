@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Windows.Storage;
 
-namespace UltimateDZForge.Configuration
+namespace DZModForger.Configuration
 {
     /// <summary>
     /// Application settings and preferences management
@@ -13,7 +13,7 @@ namespace UltimateDZForge.Configuration
         private static readonly ApplicationDataContainer LocalSettings =
             ApplicationData.Current.LocalSettings;
 
-        private const string SettingsContainerName = "UltimateDZForge";
+        private const string SettingsContainerName = "DZModForger";
 
         // ==================== VIEWPORT SETTINGS ====================
 
@@ -225,11 +225,11 @@ namespace UltimateDZForge.Configuration
 
         public static string FBXSDKPath
         {
-            get => GetString("FBXSKDPath", @"C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7");
+            get => GetString("FBXSDKPath", @"C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7");
             set => SetString("FBXSDKPath", value);
         }
 
-        public static string FBXSDKVerion
+        public static string FBXSDKVersion
         {
             get => GetString("FBXSDKVersion", "2020.3.7");
             set => SetString("FBXSDKVersion", value);
@@ -431,7 +431,7 @@ namespace UltimateDZForge.Configuration
         public const string AppVersion = "1.0.0";
         public const string FBXSDKVersion = "2020.3.7";
         public const string FBXSDKPath = @"C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7";
-        public const string AppName = "UltimateDZForge";
+        public const string AppName = "DZModForger";
         public const string AppDescription = "Professional 3D Model Editor for DayZ";
 
         // Limits
@@ -453,7 +453,7 @@ namespace UltimateDZForge.Configuration
         public const string FBXExtension = ".fbx";
         public const string OBJExtension = ".obj";
         public const string DAEExtension = ".dae";
-        public const string ProjectExtension = ".dzproj";
+        public const string ProjectExtension = ".dzmod";
 
         // Performance
         public const int DefaultTargetFPS = 120;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace UltimateDZForge.Services
+namespace DZModForger.Services
 {
     /// <summary>
     /// Manages 3D camera controls for the viewport

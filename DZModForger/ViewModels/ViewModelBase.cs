@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace UltimateDZForge.ViewModels
+namespace DZModForger.ViewModels
 {
     /// <summary>
-    /// Base class for all ViewModels in UltimateDZForge
+    /// Base class for all ViewModels in DZModForger
     /// Implements INotifyPropertyChanged for MVVM data binding
     /// </summary>
     public abstract class ViewModelBase : INotifyPropertyChanged
@@ -162,7 +162,7 @@ namespace UltimateDZForge.ViewModels
             try
             {
                 Debug.WriteLine($"[{DisplayName}] Executing: {functionName}");
-                var result = func?.Invoke();
+                var result = func.Invoke();
                 Debug.WriteLine($"[{DisplayName}] Completed: {functionName}");
                 return result;
             }
@@ -192,7 +192,7 @@ namespace UltimateDZForge.ViewModels
             try
             {
                 Debug.WriteLine($"[{DisplayName}] Executing: {functionName}");
-                var result = func?.Invoke(parameter);
+                var result = func.Invoke(parameter);
                 Debug.WriteLine($"[{DisplayName}] Completed: {functionName}");
                 return result;
             }
@@ -333,5 +333,29 @@ namespace UltimateDZForge.ViewModels
                 Debug.WriteLine($"[{displayName}] Collection: Cleared");
             }
         }
+    }
+
+    // ==================== ENUMERATIONS ====================
+
+    /// <summary>
+    /// Editor modes for viewport interaction
+    /// </summary>
+    public enum EditorMode
+    {
+        Object,
+        Edit,
+        Sculpt,
+        Animation
+    }
+
+    /// <summary>
+    /// Viewport shading modes
+    /// </summary>
+    public enum ShadeMode
+    {
+        Wireframe,
+        Solid,
+        Material,
+        Render
     }
 }

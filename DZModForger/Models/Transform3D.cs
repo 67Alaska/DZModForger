@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace UltimateDZForge.Models
+namespace DZModForger.Models
 {
     /// <summary>
     /// Represents 3D transformation (position, rotation, scale)

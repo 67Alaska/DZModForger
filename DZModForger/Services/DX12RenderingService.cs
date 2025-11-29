@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace UltimateDZForge.Services
+namespace DZModForger.Services
 {
     /// <summary>
     /// C# COM Interop wrapper for DirectX 12 rendering engine

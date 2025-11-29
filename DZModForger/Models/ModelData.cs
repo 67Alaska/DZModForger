@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Newtonsoft.Json;
 
-namespace UltimateDZForge.Models
+namespace DZModForger.Models
 {
     /// <summary>
     /// Represents loaded 3D model data

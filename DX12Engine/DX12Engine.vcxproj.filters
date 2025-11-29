@@ -1,51 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="Core">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="DX12Engine">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\1. Core">
-      <UniqueIdentifier>{15d9f573-5591-4156-b7a1-31d0561b365b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\2.Rendering">
+    <Filter Include="DX12Engine\2.Rendering">
       <UniqueIdentifier>{970318dc-2014-4d93-8ad6-ae4ffd150bc0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\2.Rendering\Headers">
+    <Filter Include="DX12Engine\2.Rendering\Headers">
       <UniqueIdentifier>{70c6d1c7-f052-46a5-8e9f-b7a233491f9d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\2.Rendering\C++">
+    <Filter Include="DX12Engine\2.Rendering\C++">
       <UniqueIdentifier>{0d25e14c-f9ee-4b01-8536-53ec4b66b5c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\C++">
+      <UniqueIdentifier>{4065f96a-837b-4cd4-a03b-c6151653c9e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Headers">
+      <UniqueIdentifier>{ca67f144-65a2-4317-be04-16a1bea322e6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="DX12Viewport.h">
+      <Filter>DX12Engine\2.Rendering\Headers</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
+      <Filter>Core\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="DX12Viewport.h">
-      <Filter>Resource Files\2.Rendering\Headers</Filter>
+    <ClInclude Include="framework.h">
+      <Filter>Core\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="DX12Viewport.cpp">
+      <Filter>DX12Engine\2.Rendering\C++</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Core\C++</Filter>
     </ClCompile>
-    <ClCompile Include="DX12Viewport.cpp">
-      <Filter>Resource Files\2.Rendering\C++</Filter>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Core\C++</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
