@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="UltimateDZForge.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="UltimateDZForge - 3D Model Editor"
+    Width="1920"
+    Height="1080"
+    Background="{StaticResource BackgroundBrush}"
+    Foreground="{StaticResource TextPrimaryBrush}">
+
+    <Grid Background="{StaticResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Menu Bar -->
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+            <Grid Height="40" Padding="12,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- File Menu -->
+                <MenuBar Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Center">
+                    <MenuItem Header="File" Foreground="{StaticResource TextPrimaryBrush}" FontSize="14">
+                        <MenuItem Header="Open Model" x:Name="MenuItemOpenModel" Click="MenuItemOpenModel_Click"/>
+                        <MenuItem Header="Save Project" x:Name="MenuItemSaveProject" Click="MenuItemSaveProject_Click"/>
+                        <MenuItem Header="Export" x:Name="MenuItemExport" Click="MenuItemExport_Click"/>
+                        <Separator/>
+                        <MenuItem Header="Exit" x:Name="MenuItemExit" Click="MenuItemExit_Click"/>
+                    </MenuItem>
+                    <MenuItem Header="Edit" Foreground="{StaticResource TextPrimaryBrush}" FontSize="14">
+                        <MenuItem Header="Undo" x:Name="MenuItemUndo"/>
+                        <MenuItem Header="Redo" x:Name="MenuItemRedo"/>
+                        <Separator/>
+                        <MenuItem Header="Preferences" x:Name="MenuItemPreferences"/>
+                    </MenuItem>
+                    <MenuItem Header="View" Foreground="{StaticResource TextPrimaryBrush}" FontSize="14">
+                        <MenuItem Header="Reset Layout" x:Name="MenuItemResetLayout"/>
+                        <MenuItem Header="Fullscreen" x:Name="MenuItemFullscreen" Click="MenuItemFullscreen_Click"/>
+                    </MenuItem>
+                    <MenuItem Header="Help" Foreground="{StaticResource TextPrimaryBrush}" FontSize="14">
+                        <MenuItem Header="About" x:Name="MenuItemAbout" Click="MenuItemAbout_Click"/>
+                        <MenuItem Header="Documentation" x:Name="MenuItemDocumentation"/>
+                    </MenuItem>
+                </MenuBar>
+
+                <!-- Mode Selector (Right side) -->
+                <StackPanel Grid.Column="5" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                    <Button x:Name="BtnObjectMode" Content="Object" Width="70" Height="28" 
+                            Background="{StaticResource AccentBrush}" Foreground="{StaticResource BackgroundBrush}"
+                            Click="BtnObjectMode_Click" FontSize="12" FontWeight="SemiBold"/>
+                    <Button x:Name="BtnEditMode" Content="Edit" Width="70" Height="28" 
+                            Background="{StaticResource PanelBrush}" Foreground="{StaticResource TextPrimaryBrush}"
+                            Click="BtnEditMode_Click" FontSize="12"/>
+                    <Button x:Name="BtnSculptMode" Content="Sculpt" Width="70" Height="28" 
+                            Background="{StaticResource PanelBrush}" Foreground="{StaticResource TextPrimaryBrush}"
+                            Click="BtnSculptMode_Click" FontSize="12"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Border Grid.Row="1" Background="{StaticResource BackgroundBrush}" Padding="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="280"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Sidebar - Scene Hierarchy -->
+                <Border Grid.Column="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="0,0,1,0" CornerRadius="4" Padding="12">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Scene" FontSize="14" FontWeight="SemiBold" 
+                                   Foreground="{StaticResource AccentBrush}" Margin="0,0,0,12"/>
+                        <TreeView x:Name="SceneHierarchyTree" Height="400" Foreground="{StaticResource TextPrimaryBrush}">
+                            <TreeViewItem Header="DayZ_Model" IsExpanded="True" Foreground="{StaticResource TextPrimaryBrush}">
+                                <TreeViewItem Header="Mesh" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <TreeViewItem Header="Armature" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <TreeViewItem Header="Materials" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </TreeViewItem>
+                        </TreeView>
+
+                        <Separator Background="{StaticResource BorderBrush}" Margin="0,12"/>
+
+                        <TextBlock Text="Outliner" FontSize="14" FontWeight="SemiBold" 
+                                   Foreground="{StaticResource AccentBrush}" Margin="0,12,0,8"/>
+                        <ListView x:Name="OutlinerList" Height="150" Background="{StaticResource BackgroundBrush}" 
+                                  Foreground="{StaticResource TextPrimaryBrush}">
+                            <ListViewItem Content="Vertex"/>
+                            <ListViewItem Content="Edge"/>
+                            <ListViewItem Content="Face"/>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+
+                <!-- Center - 3D Viewport -->
+                <Border Grid.Column="1" Background="#FF0D0D0D" BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="1" CornerRadius="4" Margin="8,0">
+                    <Grid Background="{StaticResource BackgroundBrush}">
+                        <!-- Viewport Header -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" 
+                                    Margin="8" Spacing="8" Panel.ZIndex="10">
+                            <Button x:Name="BtnShadeWire" Content="🔲 Wireframe" Width="100" Height="28" 
+                                    Background="{StaticResource PanelBrush}" Foreground="{StaticResource TextPrimaryBrush}"
+                                    Click="BtnShadeWire_Click" FontSize="11"/>
+                            <Button x:Name="BtnShadeSolid" Content="⬤ Solid" Width="100" Height="28" 
+                                    Background="{StaticResource AccentBrush}" Foreground="{StaticResource BackgroundBrush}"
+                                    Click="BtnShadeSolid_Click" FontSize="11" FontWeight="SemiBold"/>
+                            <Button x:Name="BtnShadeRender" Content="🎨 Render" Width="100" Height="28" 
+                                    Background="{StaticResource PanelBrush}" Foreground="{StaticResource TextPrimaryBrush}"
+                                    Click="BtnShadeRender_Click" FontSize="11"/>
+                        </StackPanel>
+
+                        <!-- 3D Viewport Canvas -->
+                        <Canvas x:Name="ViewportCanvas" Background="{StaticResource BackgroundBrush}" 
+                                MouseMove="ViewportCanvas_MouseMove" MouseWheel="ViewportCanvas_MouseWheel"
+                                MouseLeftButtonDown="ViewportCanvas_MouseLeftButtonDown" 
+                                MouseLeftButtonUp="ViewportCanvas_MouseLeftButtonUp"/>
+
+                        <!-- Grid Toggle -->
+                        <CheckBox x:Name="ChkShowGrid" Content="Show Grid" 
+                                  VerticalAlignment="Bottom" HorizontalAlignment="Left" 
+                                  Margin="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                  IsChecked="True" Checked="ChkShowGrid_Checked" Unchecked="ChkShowGrid_Unchecked"/>
+                    </Grid>
+                </Border>
+
+                <!-- Right Sidebar - Properties -->
+                <Border Grid.Column="2" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="1,0,0,0" CornerRadius="4" Padding="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Orientation="Vertical" Spacing="12">
+                            <!-- Rendering Stats -->
+                            <StackPanel Orientation="Vertical" Spacing="8">
+                                <TextBlock Text="Rendering" FontSize="12" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource AccentBrush}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="FPS:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TxtFPS" Text="120" FontSize="11" 
+                                               Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Resolution:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TxtResolution" Text="1600 x 1000" 
+                                               FontSize="11" Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="GPU Memory:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TxtGPUMemory" Text="2.1 GB" 
+                                               FontSize="11" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <Separator Background="{StaticResource BorderBrush}"/>
+
+                            <!-- Model Info -->
+                            <StackPanel Orientation="Vertical" Spacing="8">
+                                <TextBlock Text="Model Info" FontSize="12" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource AccentBrush}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="File:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TxtModelFile" Text="None" 
+                                               FontSize="11" Foreground="{StaticResource TextPrimaryBrush}" 
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Vertices:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TxtVertexCount" Text="0" 
+                                               FontSize="11" Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Faces:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TxtFaceCount" Text="0" 
+                                               FontSize="11" Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Bounds:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" x:Name="TxtBounds" Text="N/A" 
+                                               FontSize="11" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <Separator Background="{StaticResource BorderBrush}"/>
+
+                            <!-- Camera Controls -->
+                            <StackPanel Orientation="Vertical" Spacing="8">
+                                <TextBlock Text="Camera Controls" FontSize="12" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource AccentBrush}"/>
+                                <TextBlock FontSize="10" Foreground="{StaticResource TextSecondaryBrush}" 
+                                           TextWrapping="Wrap" Text="Left Mouse: Orbit&#10;Shift + Left: Pan&#10;Scroll: Zoom"/>
+                            </StackPanel>
+
+                            <Separator Background="{StaticResource BorderBrush}"/>
+
+                            <!-- Object Properties -->
+                            <StackPanel Orientation="Vertical" Spacing="8">
+                                <TextBlock Text="Object Properties" FontSize="12" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource AccentBrush}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Position:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TxtPosition" 
+                                               Text="X: 0.0  Y: 0.0  Z: 0.0" FontSize="11" 
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Rotation:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TxtRotation" 
+                                               Text="X: 0°  Y: 0°  Z: 0°" FontSize="11" 
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Scale:" FontSize="11" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TxtScale" 
+                                               Text="1.0  1.0  1.0" FontSize="11" 
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="0,1,0,0">
+            <Grid Padding="12,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" x:Name="TxtStatus" Text="Ready" FontSize="11" 
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Column="2" Text="DirectX 12 Engine Active" FontSize="11" 
+                           Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                <TextBlock Grid.Column="3" Text="Build: 2025.11.29" FontSize="11" 
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

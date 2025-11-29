@@ -1,0 +1,32 @@
+{
+  "profiles": {
+    "UltimateDZForge (Debug)": {
+      "commandName": "Project",
+      "executablePath": "$(ProjectDir)bin\\x64\\Debug\\UltimateDZForge.exe",
+      "workingDirectory": "$(ProjectDir)bin\\x64\\Debug",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "nativeDebugging": true,
+      "debuggerType": "Managed"
+    },
+    "UltimateDZForge (Release)": {
+      "commandName": "Project",
+      "executablePath": "$(ProjectDir)bin\\x64\\Release\\UltimateDZForge.exe",
+      "workingDirectory": "$(ProjectDir)bin\\x64\\Release",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "nativeDebugging": false
+    },
+    "UltimateDZForge (Profile)": {
+      "commandName": "Project",
+      "executablePath": "$(ProjectDir)bin\\x64\\Release\\UltimateDZForge.exe",
+      "workingDirectory": "$(ProjectDir)bin\\x64\\Release",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Profiling"
+      },
+      "nativeDebugging": false
+    }
+  }
+}
