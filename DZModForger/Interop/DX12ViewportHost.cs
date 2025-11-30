@@ -1,167 +1,66 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace DZModForger.Interop
 {
-    public sealed class DX12ViewportHost : Grid
+    public class DX12ViewportHost
     {
-        private ID3D12Viewport _viewport;
-        private IntPtr _nativeWindow = IntPtr.Zero;
-        private bool _isInitialized = false;
+        private ID3D12Viewport? _viewport;
+        private IntPtr _hModule = IntPtr.Zero;
 
-        public event EventHandler<RenderErrorEventArgs> RenderError;
+        public event EventHandler<RenderErrorEventArgs>? RenderError;
 
         public DX12ViewportHost()
         {
-            Debug.WriteLine("[DX12HOST] DX12ViewportHost created");
-
-            this.Loaded += OnLoaded;
-            this.Unloaded += OnUnloaded;
-            this.SizeChanged += OnSizeChanged;
-        }
-
-        public async void InitializeViewport()
-        {
             try
             {
-                if (_isInitialized)
-                {
-                    Debug.WriteLine("[DX12HOST] Viewport already initialized");
-                    return;
-                }
-
-                Debug.WriteLine("[DX12HOST] Initializing DirectX 12 viewport");
-
-                // Load DX12Engine.dll
-                try
-                {
-                    DX12InteropHelper.LoadDX12Engine();
-                }
-                catch
-                {
-                    Debug.WriteLine("[DX12HOST] Failed to load DX12Engine.dll");
-                    return;
-                }
-
-                _isInitialized = true;
-                Debug.WriteLine("[DX12HOST] Viewport initialized successfully");
+                Debug.WriteLine("[DX12ViewportHost] Loading DX12Engine");
+                _hModule = DX12InteropHelper.LoadDX12Engine();
+                Debug.WriteLine("[DX12ViewportHost] DX12Engine loaded");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[DX12HOST] Exception in InitializeViewport: {ex.Message}");
+                Debug.WriteLine($"[DX12ViewportHost] Error: {ex.Message}");
+                RenderError?.Invoke(this, new RenderErrorEventArgs { Exception = ex, FilePath = "DX12Engine.dll" });
             }
         }
 
-        public void LoadModel(string filePath)
+        public void Initialize(IntPtr hwnd, uint width, uint height)
         {
             try
             {
-                if (!_isInitialized)
-                {
-                    return;
-                }
-
-                Debug.WriteLine($"[DX12HOST] Loading model: {filePath}");
+                Debug.WriteLine($"[DX12ViewportHost] Initialize: {width}x{height}");
+                Guid clsid = new Guid("B2C3D4E5-F6A7-5B9C-8D9E-7F6E5D4C3B2A");
+                object? obj = Activator.CreateInstance(Type.GetTypeFromCLSID(clsid));
+                _viewport = obj as ID3D12Viewport;
+                if (_viewport == null) throw new InvalidOperationException("Failed to create viewport");
+                _viewport.Initialize(hwnd, width, height);
+                Debug.WriteLine("[DX12ViewportHost] Initialize OK");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[DX12HOST] Exception in LoadModel: {ex.Message}");
+                Debug.WriteLine($"[DX12ViewportHost] Initialize error: {ex.Message}");
+                RenderError?.Invoke(this, new RenderErrorEventArgs { Exception = ex, FilePath = "Initialize" });
             }
-        }
-
-        public void SetCamera(float distance, float yaw, float pitch, float targetX, float targetY, float targetZ)
-        {
-            try
-            {
-                if (!_isInitialized)
-                {
-                    return;
-                }
-
-                Debug.WriteLine($"[DX12HOST] Setting camera");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[DX12HOST] Exception in SetCamera: {ex.Message}");
-            }
-        }
-
-        public float GetFrameRate()
-        {
-            if (!_isInitialized)
-            {
-                return 0.0f;
-            }
-
-            return 120.0f;
-        }
-
-        public uint GetVertexCount()
-        {
-            if (!_isInitialized)
-            {
-                return 0;
-            }
-
-            return 0;
-        }
-
-        public uint GetTriangleCount()
-        {
-            if (!_isInitialized)
-            {
-                return 0;
-            }
-
-            return 0;
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("[DX12HOST] OnLoaded event");
-            InitializeViewport();
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("[DX12HOST] OnUnloaded event");
-            Shutdown();
-        }
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            Debug.WriteLine($"[DX12HOST] Size changed: {e.NewSize.Width}x{e.NewSize.Height}");
-        }
-
-        private void OnViewportRenderError(object sender, RenderErrorEventArgs e)
-        {
-            Debug.WriteLine($"[DX12HOST] Viewport render error: {e.Exception?.Message}");
-            RenderError?.Invoke(this, e);
         }
 
         public void Shutdown()
         {
             try
             {
-                Debug.WriteLine("[DX12HOST] Shutting down viewport");
-
-                _isInitialized = false;
-
-                if (_viewport != null)
-                {
-                    DX12InteropHelper.ReleaseCOMObject(_viewport);
-                    _viewport = null;
-                }
-
-                Debug.WriteLine("[DX12HOST] Shutdown complete");
+                _viewport?.Shutdown();
+                if (_viewport != null) DX12InteropHelper.ReleaseCOMObject(_viewport);
+                _viewport = null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[DX12HOST] Exception in Shutdown: {ex.Message}");
+                Debug.WriteLine($"[DX12ViewportHost] Shutdown error: {ex.Message}");
             }
         }
+
+        public void Render() => _viewport?.Render();
+        public void Resize(uint width, uint height) => _viewport?.Resize(width, height);
+        public void SetCamera(float r, float theta, float phi, float tx, float ty, float tz)
+            => _viewport?.SetCamera(r, theta, phi, tx, ty, tz);
     }
 }

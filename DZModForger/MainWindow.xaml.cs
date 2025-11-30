@@ -1,12 +1,11 @@
-﻿// MainWindow.xaml.cs - CORRECTED FOR ACTUAL EVENT ARGS
-
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using DZModForger.Services;
 using DZModForger.Interop;
 using System;
 using System.Threading.Tasks;
 using Windows.Storage.Pickers;
+using System.Diagnostics;
 
 namespace DZModForger
 {
@@ -27,6 +26,8 @@ namespace DZModForger
         {
             try
             {
+                Debug.WriteLine("[MainWindow] Initializing services...");
+
                 _modelLoaderService = new ModelLoaderService();
                 _modelLoaderService.ModelLoaded += OnModelLoaded;
                 _modelLoaderService.ModelLoadError += OnModelLoadError;
@@ -35,16 +36,38 @@ namespace DZModForger
                 _viewportHost.RenderError += OnViewportRenderError;
 
                 _statsUpdateTimer = new DispatcherTimer();
-                _statsUpdateTimer.Interval = TimeSpan.FromMilliseconds(100);
+                _statsUpdateTimer.Interval = TimeSpan.FromMilliseconds(16); // ~60 FPS
                 _statsUpdateTimer.Tick += OnStatsUpdateTick;
                 _statsUpdateTimer.Start();
 
                 this.Closed += Window_Closed;
                 this.Activated += OnWindowActivated;
+
+                // Initialize viewport with window handle
+                if (ViewportCanvas != null && _viewportHost != null)
+                {
+                    IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+                    Debug.WriteLine($"[MainWindow] Window HWND: {hwnd}");
+
+                    uint width = 1920;
+                    uint height = 1080;
+
+                    _viewportHost.Initialize(hwnd, width, height);
+                    Debug.WriteLine("[MainWindow] Viewport initialized successfully");
+
+                    if (StatusText != null)
+                    {
+                        StatusText.Text = "Viewport initialized - Ready to load models";
+                    }
+                }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[MainWindow] Initialization error: {ex.Message}");
+                Debug.WriteLine($"[MainWindow] Initialization error: {ex.Message}\n{ex.StackTrace}");
+                if (StatusText != null)
+                {
+                    StatusText.Text = $"Initialization error: {ex.Message}";
+                }
             }
         }
 
@@ -56,13 +79,16 @@ namespace DZModForger
                 {
                     if (StatusText != null)
                     {
-                        // Use correct property name from your ModelLoadedEventArgs
                         StatusText.Text = $"Model loaded: {e.FilePath ?? "Unknown"}";
+                    }
+                    if (TxtModelFile != null)
+                    {
+                        TxtModelFile.Text = System.IO.Path.GetFileName(e.FilePath ?? "");
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[OnModelLoaded] Error: {ex.Message}");
+                    Debug.WriteLine($"[OnModelLoaded] Error: {ex.Message}");
                 }
             });
         }
@@ -75,13 +101,12 @@ namespace DZModForger
                 {
                     if (StatusText != null)
                     {
-                        // Use correct property name from your ModelLoadErrorEventArgs
                         StatusText.Text = $"Error loading model: {e.Exception?.Message ?? "Unknown error"}";
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[OnModelLoadError] Error: {ex.Message}");
+                    Debug.WriteLine($"[OnModelLoadError] Error: {ex.Message}");
                 }
             });
         }
@@ -94,13 +119,12 @@ namespace DZModForger
                 {
                     if (StatusText != null)
                     {
-                        // Use correct property name from your RenderErrorEventArgs
                         StatusText.Text = $"Render error: {e.Exception?.Message ?? "Unknown error"}";
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[OnViewportRenderError] Error: {ex.Message}");
+                    Debug.WriteLine($"[OnViewportRenderError] Error: {ex.Message}");
                 }
             });
         }
@@ -109,11 +133,17 @@ namespace DZModForger
         {
             try
             {
-                // Update FPS and statistics here if needed
+                if (_viewportHost != null && TxtFPS != null)
+                {
+                    // There is no GetFrameRate method in DX12ViewportHost.
+                    // You need to implement this method or remove this line.
+                    // For now, display a placeholder or remove the FPS update.
+                    TxtFPS.Text = "N/A";
+                }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[OnStatsUpdateTick] Error: {ex.Message}");
+                Debug.WriteLine($"[OnStatsUpdateTick] Error: {ex.Message}");
             }
         }
 
@@ -149,7 +179,6 @@ namespace DZModForger
             {
                 StatusText.Text = "Switched to wireframe mode";
             }
-            UpdateShadeButtonStates(sender as Button);
         }
 
         private void BtnShadeSolid_Click(object sender, RoutedEventArgs e)
@@ -158,7 +187,6 @@ namespace DZModForger
             {
                 StatusText.Text = "Switched to solid mode";
             }
-            UpdateShadeButtonStates(sender as Button);
         }
 
         private void BtnShadeRender_Click(object sender, RoutedEventArgs e)
@@ -167,7 +195,6 @@ namespace DZModForger
             {
                 StatusText.Text = "Switched to render mode";
             }
-            UpdateShadeButtonStates(sender as Button);
         }
 
         private void BtnObjectMode_Click(object sender, RoutedEventArgs e)
@@ -176,7 +203,6 @@ namespace DZModForger
             {
                 StatusText.Text = "Switched to object mode";
             }
-            UpdateModeButtonStates(sender as Button);
         }
 
         private void BtnEditMode_Click(object sender, RoutedEventArgs e)
@@ -185,7 +211,6 @@ namespace DZModForger
             {
                 StatusText.Text = "Switched to edit mode";
             }
-            UpdateModeButtonStates(sender as Button);
         }
 
         private void BtnSculptMode_Click(object sender, RoutedEventArgs e)
@@ -194,7 +219,6 @@ namespace DZModForger
             {
                 StatusText.Text = "Switched to sculpt mode";
             }
-            UpdateModeButtonStates(sender as Button);
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e)
@@ -208,6 +232,7 @@ namespace DZModForger
             {
                 StatusText.Text = "Camera reset";
             }
+            _viewportHost?.SetCamera(5.0f, 0.0f, 30.0f, 0.0f, 0.0f, 0.0f);
         }
 
         private void MenuFullscreen_Click(object sender, RoutedEventArgs e)
@@ -241,16 +266,6 @@ namespace DZModForger
         }
 
         // ==================== HELPER METHODS ====================
-
-        private void UpdateShadeButtonStates(Button? activeButton)
-        {
-            // Update button visual states
-        }
-
-        private void UpdateModeButtonStates(Button? activeButton)
-        {
-            // Update button visual states
-        }
 
         private async Task OpenModelFileAsync()
         {
@@ -335,7 +350,7 @@ namespace DZModForger
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[ShowAboutDialog] Error: {ex.Message}");
+                Debug.WriteLine($"[ShowAboutDialog] Error: {ex.Message}");
             }
         }
 
@@ -359,7 +374,7 @@ namespace DZModForger
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[ShowPreferencesDialog] Error: {ex.Message}");
+                Debug.WriteLine($"[ShowPreferencesDialog] Error: {ex.Message}");
             }
         }
 
@@ -393,7 +408,7 @@ namespace DZModForger
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[Window_Closed] Error: {ex.Message}");
+                Debug.WriteLine($"[Window_Closed] Error: {ex.Message}");
             }
         }
 
@@ -405,7 +420,7 @@ namespace DZModForger
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[OnWindowActivated] Error: {ex.Message}");
+                Debug.WriteLine($"[OnWindowActivated] Error: {ex.Message}");
             }
         }
     }

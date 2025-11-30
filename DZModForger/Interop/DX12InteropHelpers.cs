@@ -11,14 +11,6 @@ namespace DZModForger.Interop
         [DllImport("kernel32", SetLastError = true)]
         private static extern IntPtr LoadLibrary(string lpFileName);
 
-        [DllImport("ole32.dll")]
-        private static extern int CoCreateInstance(
-            ref Guid rclsid,
-            IntPtr pUnkOuter,
-            uint dwClsContext,
-            ref Guid riid,
-            out IntPtr ppv);
-
         private const uint CLSCTX_INPROC_SERVER = 1;
 
         public static IntPtr LoadDX12Engine()
@@ -44,17 +36,17 @@ namespace DZModForger.Interop
                     throw new DllNotFoundException($"Failed to load DX12Engine.dll. Error: {error}");
                 }
 
-                Debug.WriteLine($"[DX12INTEROP] DX12Engine.dll loaded successfully");
+                Debug.WriteLine("[DX12INTEROP] DX12Engine.dll loaded successfully");
                 return hModule;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[DX12INTEROP] Exception in LoadDX12Engine: {ex.Message}");
+                Debug.WriteLine($"[DX12INTEROP] Exception: {ex.Message}");
                 throw;
             }
         }
 
-        public static void ReleaseCOMObject(object obj)
+        public static void ReleaseCOMObject(object? obj)
         {
             try
             {
@@ -112,8 +104,8 @@ namespace DZModForger.Interop
 
     public class RenderErrorEventArgs : EventArgs
     {
-        public Exception Exception { get; set; }
-        public string FilePath { get; set; }
+        public Exception? Exception { get; set; }
+        public string? FilePath { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }
 }

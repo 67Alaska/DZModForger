@@ -4,7 +4,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DZModForger"
-    xmlns:interop="using:DZModForger.Interop"
     Title="DZModForger - Professional 3D Model Editor">
 
     <Grid Background="{StaticResource BackgroundBrush}">
@@ -141,10 +140,8 @@
                                     Click="BtnShadeRender_Click" FontSize="11" CornerRadius="4"/>
                         </StackPanel>
 
-                        <!-- DirectX 12 Viewport Host -->
-                        <interop:DX12ViewportHost x:Name="ViewportHost" 
-                                                  Background="{StaticResource BackgroundBrush}"
-                                                  RenderError="ViewportHost_RenderError"/>
+                        <!-- DirectX 12 Viewport Host (Created in code-behind) -->
+                        <Canvas x:Name="ViewportCanvas" Background="#FF1a1a1a"/>
 
                         <!-- Grid Toggle -->
                         <CheckBox x:Name="ChkShowGrid" Content="Show Grid" 
