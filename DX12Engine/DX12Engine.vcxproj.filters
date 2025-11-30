@@ -24,6 +24,9 @@
     <Filter Include="Core\Headers">
       <UniqueIdentifier>{ca67f144-65a2-4317-be04-16a1bea322e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{abaf0b79-3bcc-466b-9c97-a2946da3b0a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX12Viewport.h">

@@ -1,438 +1,278 @@
-﻿using System;
+﻿using DZModForger.Models;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using DZModForger.Models;
 
 namespace DZModForger.ViewModels
 {
-    /// <summary>
-    /// Shell ViewModel - MVVM core for main application state and commands
-    /// Manages project data, rendering state, and UI coordination
-    /// </summary>
-    public class ShellViewModel : ViewModelBase
+    public sealed partial class ShellViewModel : ViewModelBase
     {
-        private string _projectName;
-        private string _projectPath;
-        private bool _isProjectModified;
-        private int _currentFrameRate;
-        private string _statusMessage;
-        private EditorMode _currentEditorMode;
-        private ShadeMode _currentShadeMode;
-        private float _cameraDistance;
-        private float _cameraYaw;
-        private float _cameraPitch;
+        private ObservableCollection<SceneObject> _sceneObjects;
+        private ObservableCollection<ModelReference> _modelReferences;
+        private SceneObject? _selectedObject;
+        private ModelReference? _selectedModel;
 
-        // Collections
-        public ObservableCollection<SceneObject> SceneObjects { get; }
-        public ObservableCollection<ModelData> LoadedModels { get; }
-        public ObservableCollection<string> RecentFiles { get; }
+        public ObservableCollection<SceneObject> SceneObjects
+        {
+            get => _sceneObjects;
+            set => SetProperty(ref _sceneObjects, value);
+        }
 
-        // Commands
-        public ICommand OpenProjectCommand { get; }
-        public ICommand SaveProjectCommand { get; }
-        public ICommand NewProjectCommand { get; }
-        public ICommand ExportModelCommand { get; }
-        public ICommand ResetViewCommand { get; }
-        public ICommand ToggleGridCommand { get; }
+        public ObservableCollection<ModelReference> ModelReferences
+        {
+            get => _modelReferences;
+            set => SetProperty(ref _modelReferences, value);
+        }
+
+        public SceneObject? SelectedObject
+        {
+            get => _selectedObject;
+            set => SetProperty(ref _selectedObject, value);
+        }
+
+        public ModelReference? SelectedModel
+        {
+            get => _selectedModel;
+            set => SetProperty(ref _selectedModel, value);
+        }
+
+        public ICommand DeleteObjectCommand { get; }
+        public ICommand DuplicateObjectCommand { get; }
+        public ICommand RenameObjectCommand { get; }
+        public ICommand ClearSceneCommand { get; }
 
         public ShellViewModel()
         {
-            Debug.WriteLine("[SHELLVIEWMODEL] Initializing");
+            Debug.WriteLine("[SHELLVIEWMODEL] ShellViewModel created");
 
-            // Initialize collections
-            SceneObjects = new ObservableCollection<SceneObject>();
-            LoadedModels = new ObservableCollection<ModelData>();
-            RecentFiles = new ObservableCollection<string>();
+            _sceneObjects = new ObservableCollection<SceneObject>();
+            _modelReferences = new ObservableCollection<ModelReference>();
 
-            // Initialize properties
-            _projectName = "Untitled Project";
-            _projectPath = "";
-            _isProjectModified = false;
-            _currentFrameRate = 120;
-            _statusMessage = "Ready";
-            _currentEditorMode = EditorMode.Object;
-            _currentShadeMode = ShadeMode.Solid;
-            _cameraDistance = 5.0f;
-            _cameraYaw = 0.0f;
-            _cameraPitch = 30.0f;
-
-            // Initialize commands
-            OpenProjectCommand = new RelayCommand(async () => await OpenProject());
-            SaveProjectCommand = new RelayCommand(async () => await SaveProject());
-            NewProjectCommand = new RelayCommand(async () => await NewProject());
-            ExportModelCommand = new RelayCommand(async () => await ExportModel());
-            ResetViewCommand = new RelayCommand(() => ResetCameraView());
-            ToggleGridCommand = new RelayCommand(() => ToggleGridVisibility());
-
-            // Load recent files from settings
-            LoadRecentFiles();
-
-            Debug.WriteLine("[SHELLVIEWMODEL] Initialization complete");
+            DeleteObjectCommand = new RelayCommand(DeleteObject, CanDeleteObject);
+            DuplicateObjectCommand = new RelayCommand(DuplicateObject, CanDuplicateObject);
+            RenameObjectCommand = new RelayCommand(RenameObject, CanRenameObject);
+            ClearSceneCommand = new RelayCommand(ClearScene, CanClearScene);
         }
 
-        // ==================== PROPERTIES ====================
+        private bool CanDeleteObject(object parameter) => SelectedObject != null;
+        private bool CanDuplicateObject(object parameter) => SelectedObject != null;
+        private bool CanRenameObject(object parameter) => SelectedObject != null;
+        private bool CanClearScene(object parameter) => SceneObjects.Count > 0;
 
-        public string ProjectName
-        {
-            get => _projectName;
-            set => SetProperty(ref _projectName, value);
-        }
-
-        public string ProjectPath
-        {
-            get => _projectPath;
-            set => SetProperty(ref _projectPath, value);
-        }
-
-        public bool IsProjectModified
-        {
-            get => _isProjectModified;
-            set => SetProperty(ref _isProjectModified, value);
-        }
-
-        public int CurrentFrameRate
-        {
-            get => _currentFrameRate;
-            set => SetProperty(ref _currentFrameRate, value);
-        }
-
-        public string StatusMessage
-        {
-            get => _statusMessage;
-            set => SetProperty(ref _statusMessage, value);
-        }
-
-        public EditorMode CurrentEditorMode
-        {
-            get => _currentEditorMode;
-            set => SetProperty(ref _currentEditorMode, value);
-        }
-
-        public ShadeMode CurrentShadeMode
-        {
-            get => _currentShadeMode;
-            set => SetProperty(ref _currentShadeMode, value);
-        }
-
-        public float CameraDistance
-        {
-            get => _cameraDistance;
-            set => SetProperty(ref _cameraDistance, value);
-        }
-
-        public float CameraYaw
-        {
-            get => _cameraYaw;
-            set => SetProperty(ref _cameraYaw, value);
-        }
-
-        public float CameraPitch
-        {
-            get => _cameraPitch;
-            set => SetProperty(ref _cameraPitch, value);
-        }
-
-        // ==================== PROJECT COMMANDS ====================
-
-        private async Task NewProject()
+        private void DeleteObject(object parameter)
         {
             try
             {
-                Debug.WriteLine("[SHELLVIEWMODEL] Creating new project");
-                StatusMessage = "Creating new project...";
-
-                ProjectName = "Untitled Project";
-                ProjectPath = "";
-                IsProjectModified = false;
-
-                SceneObjects.Clear();
-                LoadedModels.Clear();
-
-                StatusMessage = "New project created";
-                Debug.WriteLine("[SHELLVIEWMODEL] New project created successfully");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in NewProject: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
-            }
-        }
-
-        private async Task OpenProject()
-        {
-            try
-            {
-                Debug.WriteLine("[SHELLVIEWMODEL] Opening project");
-                StatusMessage = "Opening project...";
-
-                // File picker logic would go here
-                // For now, just update status
-                StatusMessage = "Project opened";
-                Debug.WriteLine("[SHELLVIEWMODEL] Project opened successfully");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in OpenProject: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
-            }
-        }
-
-        private async Task SaveProject()
-        {
-            try
-            {
-                Debug.WriteLine("[SHELLVIEWMODEL] Saving project");
-                StatusMessage = "Saving project...";
-
-                // Serialize project data
-                var projectData = new DZProject
+                if (SelectedObject != null)
                 {
-                    Name = ProjectName,
-                    Path = ProjectPath,
-                    Objects = SceneObjects,
-                    Models = LoadedModels
-                };
-
-                // Save to file (JSON)
-                // FileService.SaveProject(projectData);
-
-                IsProjectModified = false;
-                StatusMessage = $"Project saved: {ProjectName}";
-                Debug.WriteLine("[SHELLVIEWMODEL] Project saved successfully");
+                    Debug.WriteLine($"[SHELLVIEWMODEL] Deleting object: {SelectedObject.Name}");
+                    SceneObjects.Remove(SelectedObject);
+                    SelectedObject = null;
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in SaveProject: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
+                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in DeleteObject: {ex.Message}");
             }
         }
 
-        private async Task ExportModel()
+        private void DuplicateObject(object parameter)
         {
             try
             {
-                Debug.WriteLine("[SHELLVIEWMODEL] Exporting model");
-                StatusMessage = "Exporting model...";
-
-                // Export logic would go here
-                // Supports: FBX, OBJ, DAE, GLTF
-
-                StatusMessage = "Model exported successfully";
-                Debug.WriteLine("[SHELLVIEWMODEL] Model exported");
+                if (SelectedObject != null)
+                {
+                    Debug.WriteLine($"[SHELLVIEWMODEL] Duplicating object: {SelectedObject.Name}");
+                    var duplicate = new SceneObject
+                    {
+                        Name = $"{SelectedObject.Name}_Copy",
+                        Transform = new Transform3D { Position = SelectedObject.Transform.Position },
+                        Model = SelectedObject.Model
+                    };
+                    SceneObjects.Add(duplicate);
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in ExportModel: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
+                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in DuplicateObject: {ex.Message}");
             }
         }
 
-        // ==================== VIEW COMMANDS ====================
-
-        private void ResetCameraView()
+        private void RenameObject(object parameter)
         {
             try
             {
-                Debug.WriteLine("[SHELLVIEWMODEL] Resetting camera view");
-
-                CameraDistance = 5.0f;
-                CameraYaw = 0.0f;
-                CameraPitch = 30.0f;
-
-                StatusMessage = "Camera view reset";
-                Debug.WriteLine("[SHELLVIEWMODEL] Camera view reset successfully");
+                if (SelectedObject != null)
+                {
+                    Debug.WriteLine($"[SHELLVIEWMODEL] Rename object: {SelectedObject.Name}");
+                    // TODO: Show rename dialog
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in ResetCameraView: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
+                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in RenameObject: {ex.Message}");
             }
         }
 
-        private void ToggleGridVisibility()
+        private void ClearScene(object parameter)
         {
             try
             {
-                Debug.WriteLine("[SHELLVIEWMODEL] Toggling grid visibility");
-                StatusMessage = "Grid visibility toggled";
+                Debug.WriteLine("[SHELLVIEWMODEL] Clearing scene");
+                SceneObjects.Clear();
+                SelectedObject = null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in ToggleGridVisibility: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
+                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in ClearScene: {ex.Message}");
             }
         }
 
-        // ==================== SCENE MANAGEMENT ====================
-
-        public void AddSceneObject(SceneObject obj)
+        public void AddObject(SceneObject sceneObject)
         {
             try
             {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Adding scene object: {obj.Name}");
-                SceneObjects.Add(obj);
-                IsProjectModified = true;
-                StatusMessage = $"Added: {obj.Name}";
+                Debug.WriteLine($"[SHELLVIEWMODEL] Adding object: {sceneObject.Name}");
+                SceneObjects.Add(sceneObject);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in AddSceneObject: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
+                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in AddObject: {ex.Message}");
             }
         }
 
-        public void RemoveSceneObject(SceneObject obj)
+        public void AddModel(ModelReference modelRef)
         {
             try
             {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Removing scene object: {obj.Name}");
-                SceneObjects.Remove(obj);
-                IsProjectModified = true;
-                StatusMessage = $"Removed: {obj.Name}";
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in RemoveSceneObject: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
-            }
-        }
-
-        public void AddModel(ModelData model)
-        {
-            try
-            {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Adding model: {model.FileName}");
-                LoadedModels.Add(model);
-                IsProjectModified = true;
-                StatusMessage = $"Loaded: {model.FileName}";
+                Debug.WriteLine($"[SHELLVIEWMODEL] Adding model reference: {modelRef.Name}");
+                ModelReferences.Add(modelRef);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"[SHELLVIEWMODEL] Exception in AddModel: {ex.Message}");
-                StatusMessage = $"Error: {ex.Message}";
             }
-        }
-
-        // ==================== SETTINGS ====================
-
-        private void LoadRecentFiles()
-        {
-            try
-            {
-                Debug.WriteLine("[SHELLVIEWMODEL] Loading recent files");
-
-                // Load from settings/registry
-                // For now, just clear collection
-                RecentFiles.Clear();
-
-                Debug.WriteLine("[SHELLVIEWMODEL] Recent files loaded");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[SHELLVIEWMODEL] Exception in LoadRecentFiles: {ex.Message}");
-            }
-        }
-
-        public void UpdateFrameRate(int fps)
-        {
-            CurrentFrameRate = fps;
-            Debug.WriteLine($"[SHELLVIEWMODEL] Frame rate updated: {fps}");
-        }
-
-        public void UpdateEditorMode(EditorMode mode)
-        {
-            CurrentEditorMode = mode;
-            StatusMessage = $"Mode: {mode}";
-            Debug.WriteLine($"[SHELLVIEWMODEL] Editor mode changed: {mode}");
-        }
-
-        public void UpdateShadeMode(ShadeMode mode)
-        {
-            CurrentShadeMode = mode;
-            StatusMessage = $"Shading: {mode}";
-            Debug.WriteLine($"[SHELLVIEWMODEL] Shade mode changed: {mode}");
         }
     }
 
-    // ==================== RELAY COMMAND ====================
+    public class SceneObject : ViewModelBase
+    {
+        private string _name = string.Empty;
+        private Transform3D _transform = new();
+        private ModelData _model = new();
+
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+
+        public Transform3D Transform
+        {
+            get => _transform;
+            set => SetProperty(ref _transform, value);
+        }
+
+        public ModelData Model
+        {
+            get => _model;
+            set => SetProperty(ref _model, value);
+        }
+    }
+
+    public class ModelReference : ViewModelBase
+    {
+        private string _name = string.Empty;
+        private string _path = string.Empty;
+        private ObservableCollection<SceneObject> _objects = new();
+        private ObservableCollection<ModelData> _models = new();
+
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+
+        public string Path
+        {
+            get => _path;
+            set => SetProperty(ref _path, value);
+        }
+
+        public ObservableCollection<SceneObject> Objects
+        {
+            get => _objects;
+            set => SetProperty(ref _objects, value);
+        }
+
+        public ObservableCollection<ModelData> Models
+        {
+            get => _models;
+            set => SetProperty(ref _models, value);
+        }
+    }
 
     public class RelayCommand : ICommand
     {
-        private readonly Action _execute;
-        private readonly Func<bool> _canExecute;
+        private readonly Action<object> _execute;
+        private readonly Func<object, bool>? _canExecute;
 
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
+        public event EventHandler? CanExecuteChanged;
 
-        public RelayCommand(Action execute, Func<bool> canExecute = null)
+        public RelayCommand(Action<object> execute, Func<object, bool>? canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
-        public bool CanExecute(object parameter) => _canExecute?.Invoke() ?? true;
+        public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter!) ?? true;
 
-        public void Execute(object parameter) => _execute();
+        public void Execute(object? parameter)
+        {
+            if (CanExecute(parameter))
+                _execute(parameter!);
+        }
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
-
-    // ==================== ASYNC RELAY COMMAND ====================
 
     public class AsyncRelayCommand : ICommand
     {
-        private readonly Func<Task> _execute;
-        private readonly Func<bool> _canExecute;
+        private readonly Func<object, Task> _execute;
+        private readonly Func<object, bool>? _canExecute;
         private bool _isExecuting;
 
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged;
 
-        public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute = null)
+        public AsyncRelayCommand(Func<object, Task> execute, Func<object, bool>? canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
-        public bool CanExecute(object parameter) => !_isExecuting && (_canExecute?.Invoke() ?? true);
+        public bool CanExecute(object? parameter) => !_isExecuting && (_canExecute?.Invoke(parameter!) ?? true);
 
-        public async void Execute(object parameter)
+        public async void Execute(object? parameter)
         {
-            if (!CanExecute(parameter)) return;
+            if (!CanExecute(parameter))
+                return;
 
             _isExecuting = true;
             try
             {
-                await _execute();
+                await _execute(parameter!);
             }
             finally
             {
                 _isExecuting = false;
-                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                RaiseCanExecuteChanged();
             }
         }
-    }
 
-    // ==================== DATA MODELS ====================
-
-    public class SceneObject
-    {
-        public string Name { get; set; }
-        public Transform3D Transform { get; set; }
-        public ModelData Model { get; set; }
-        public bool IsVisible { get; set; }
-        public bool IsSelected { get; set; }
-    }
-
-    public class DZProject
-    {
-        public string Name { get; set; }
-        public string Path { get; set; }
-        public ObservableCollection<SceneObject> Objects { get; set; }
-        public ObservableCollection<ModelData> Models { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime LastModifiedDate { get; set; }
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 }

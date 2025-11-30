@@ -1,71 +1,48 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
+// dllmain.cpp - COMPLETE FILE
+
 #include "pch.h"
 #include "DX12Viewport.h"
 
-#define DX12ENGINE_VERSION "1.0.0"
-
-// ==================== DLL EXPORTS ====================
-
-// Factory function to create ID3D12Viewport COM object
-extern "C" __declspec(dllexport) HRESULT CreateD3D12Viewport(ID3D12Viewport** ppViewport)
-{
-    if (!ppViewport)
-        return E_INVALIDARG;
-
-    try
-    {
-        *ppViewport = new DX12Viewport();
-        if (*ppViewport == nullptr)
-            return E_OUTOFMEMORY;
-
-        (*ppViewport)->AddRef();
-        return S_OK;
-    }
-    catch (const std::exception& ex)
-    {
-        OutputDebugStringA("[DX12ENGINE] Exception in CreateD3D12Viewport: ");
-        OutputDebugStringA(ex.what());
-        OutputDebugStringA("\n");
-        return E_FAIL;
-    }
-}
-
-// Get engine version
-extern "C" __declspec(dllexport) const char* GetDX12EngineVersion()
-{
-    return DX12ENGINE_VERSION;
-}
-
-// ==================== DLL ENTRY POINT ====================
-
-BOOL APIENTRY DllMain(HMODULE hModule,
-    DWORD  ul_reason_for_call,
-    LPVOID lpReserved)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-    {
-        OutputDebugStringA("[DX12ENGINE] DLL_PROCESS_ATTACH\n");
-        OutputDebugStringA("[DX12ENGINE] DX12Engine.dll loaded successfully\n");
-        break;
-    }
     case DLL_THREAD_ATTACH:
-    {
-        OutputDebugStringA("[DX12ENGINE] DLL_THREAD_ATTACH\n");
-        break;
-    }
     case DLL_THREAD_DETACH:
-    {
-        OutputDebugStringA("[DX12ENGINE] DLL_THREAD_DETACH\n");
-        break;
-    }
     case DLL_PROCESS_DETACH:
-    {
-        OutputDebugStringA("[DX12ENGINE] DLL_PROCESS_DETACH\n");
-        OutputDebugStringA("[DX12ENGINE] DX12Engine.dll unloaded\n");
         break;
-    }
     }
     return TRUE;
 }
+
+extern "C"
+{
+    // Class factory for DX12Viewport
+    HRESULT STDMETHODCALLTYPE DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
+    {
+        if (!ppv) return E_INVALIDARG;
+        *ppv = nullptr;
+
+        if (rclsid == CLSID_DX12Viewport)
+        {
+            DX12Viewport* pViewport = new DX12Viewport();
+            if (!pViewport) return E_OUTOFMEMORY;
+
+            HRESULT hr = pViewport->QueryInterface(riid, ppv);
+            pViewport->Release();
+            return hr;
+        }
+
+        return CLASS_E_CLASSNOTAVAILABLE;
+    }
+
+    HRESULT STDMETHODCALLTYPE DllCanUnloadNow()
+    {
+        return S_OK;
+    }
+}
+
+// GUIDs
+const GUID IID_ID3D12Viewport = { 0xA1B2C3D4, 0xE5F6, 0x4A5B, { 0x9C, 0x8D, 0x7E, 0x6F, 0x5A, 0x4B, 0x3C, 0x2D } };
+const GUID CLSID_DX12Viewport = { 0xB2C3D4E5, 0xF6A7, 0x5B9C, { 0x8D, 0x9E, 0x7F, 0x6E, 0x5D, 0x4C, 0x3B, 0x2A } };
