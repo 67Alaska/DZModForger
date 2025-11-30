@@ -1,90 +1,54 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace DZModForger.Interop
 {
-    /// <summary>
-    /// P/Invoke helper for DX12Engine.dll native interop
-    /// </summary>
     public static class DX12InteropHelper
     {
-        private static IntPtr _viewportHandle = IntPtr.Zero;
-        private static bool _isInitialized = false;
+        private const string DllName = "DX12Engine.dll";
+        private static IntPtr _viewportInstance = IntPtr.Zero;
 
-        /// <summary>
-        /// Initialize DX12 viewport with window handle
-        /// </summary>
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr CreateViewport(IntPtr hwnd, int width, int height);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void DestroyViewport(IntPtr instance);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void ResizeViewport(IntPtr instance, int width, int height);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void RenderViewport(IntPtr instance);
+
         public static bool Initialize(IntPtr hwnd, uint width, uint height)
         {
-            try
-            {
-                if (_isInitialized)
-                    return true;
+            if (_viewportInstance != IntPtr.Zero) return true;
 
-                _viewportHandle = hwnd;
-                _isInitialized = true;
-
-                Debug.WriteLine($"[DX12INTEROP] Initialized - HWND: {hwnd:X}, Size: {width}x{height}");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[DX12INTEROP] Initialize error: {ex.Message}");
-                return false;
-            }
+            _viewportInstance = CreateViewport(hwnd, (int)width, (int)height);
+            return _viewportInstance != IntPtr.Zero;
         }
 
-        /// <summary>
-        /// Get engine version string
-        /// </summary>
-        public static string GetEngineVersion()
+        public static void Render()
         {
-            return "DX12Engine v1.0.0";
+            if (_viewportInstance != IntPtr.Zero)
+                RenderViewport(_viewportInstance);
         }
 
-        /// <summary>
-        /// Shutdown engine
-        /// </summary>
+        public static void Resize(uint width, uint height)
+        {
+            if (_viewportInstance != IntPtr.Zero)
+                ResizeViewport(_viewportInstance, (int)width, (int)height);
+        }
+
         public static void Shutdown()
         {
-            try
+            if (_viewportInstance != IntPtr.Zero)
             {
-                if (_isInitialized)
-                {
-                    _isInitialized = false;
-                    _viewportHandle = IntPtr.Zero;
-                    Debug.WriteLine("[DX12INTEROP] Shutdown complete");
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[DX12INTEROP] Shutdown error: {ex.Message}");
+                DestroyViewport(_viewportInstance);
+                _viewportInstance = IntPtr.Zero;
             }
         }
 
-        /// <summary>
-        /// Get viewport handle
-        /// </summary>
-        public static IntPtr GetViewportHandle() => _viewportHandle;
-
-        /// <summary>
-        /// Check if initialized
-        /// </summary>
-        public static bool IsInitialized => _isInitialized;
-    }
-
-    /// <summary>
-    /// Event args for render errors
-    /// </summary>
-    public class RenderErrorEventArgs : EventArgs
-    {
-        public string? Exception { get; set; }
-        public string? Message { get; set; }
-
-        public RenderErrorEventArgs(string? exception, string? message)
-        {
-            Exception = exception;
-            Message = message;
-        }
+        public static string GetEngineVersion() => "DX12 Flat API v1.0";
     }
 }

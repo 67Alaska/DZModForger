@@ -13,19 +13,19 @@ namespace DZModForger
         private Windows.Foundation.Point _lastMousePos;
         private bool _isOrbiting = false;
         private DX12RenderingService? _renderingService;
+        private IntPtr _viewportHandle = IntPtr.Zero;
 
         public MainWindow()
         {
             this.InitializeComponent();
-            Debug.WriteLine("[MAINWINDOW] Initializing");
+            Debug.WriteLine("[MAINWINDOW] Initialized");
 
             try
             {
-                // Initialize rendering service
+                // Initialize rendering service (NO WinRT calls here!)
                 _renderingService = new DX12RenderingService();
-
                 StatusText.Text = $"Ready - {DX12InteropHelper.GetEngineVersion()}";
-                Debug.WriteLine("[MAINWINDOW] Initialization complete");
+                Debug.WriteLine("[MAINWINDOW] Rendering service initialized");
             }
             catch (Exception ex)
             {
@@ -46,6 +46,7 @@ namespace DZModForger
                 picker.FileTypeFilter.Add(".gltf");
                 picker.FileTypeFilter.Add(".glb");
 
+                // ONLY call WinRT interop when actually using the picker
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
                 WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
