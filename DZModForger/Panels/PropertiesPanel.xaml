@@ -1,4 +1,4 @@
-﻿ ﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
     x:Class="DZModForger.Panels.PropertiesPanel"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,317 +6,49 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{StaticResource PanelBrush}"
-    Foreground="{StaticResource TextPrimaryBrush}"
-    Padding="12">
+    Background="#2D2D2D"
+    Foreground="#FFFFFF">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Orientation="Vertical" Spacing="12">
+        <StackPanel Orientation="Vertical" Spacing="16" Padding="12">
 
-            <!-- ==================== RENDERING STATS ==================== -->
+            <!-- MODEL INFO -->
             <StackPanel Orientation="Vertical" Spacing="8">
                 <TextBlock
-                    Text="Rendering"
-                    FontSize="14"
+                    Text="Model"
+                    FontSize="12"
                     FontWeight="SemiBold"
-                    Foreground="{StaticResource AccentBrush}"/>
+                    Foreground="#4FC3F7"/>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <StackPanel Orientation="Vertical" Spacing="4">
+                    <TextBlock Text="File:" FontSize="11" Foreground="#A0A0A0"/>
+                    <TextBlock x:Name="PropModelFile" Text="None" FontSize="11" Foreground="#FFFFFF"/>
+                </StackPanel>
 
-                    <!-- FPS -->
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Text="FPS:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        x:Name="PropFPS"
-                        Text="120"
-                        FontSize="12"
-                        Foreground="{StaticResource SuccessBrush}"
-                        FontWeight="SemiBold"/>
+                <StackPanel Orientation="Vertical" Spacing="4">
+                    <TextBlock Text="Vertices:" FontSize="11" Foreground="#A0A0A0"/>
+                    <TextBlock x:Name="PropVertexCount" Text="0" FontSize="11" Foreground="#FFFFFF"/>
+                </StackPanel>
 
-                    <!-- Resolution -->
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Text="Resolution:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        x:Name="PropResolution"
-                        Text="1600 x 1000"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"/>
-
-                    <!-- GPU Memory -->
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Text="GPU Mem:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        x:Name="PropGPUMemory"
-                        Text="0 MB"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"/>
-
-                    <!-- API -->
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="0"
-                        Text="API:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        Text="DirectX 12"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"/>
-                </Grid>
+                <StackPanel Orientation="Vertical" Spacing="4">
+                    <TextBlock Text="Faces:" FontSize="11" Foreground="#A0A0A0"/>
+                    <TextBlock x:Name="PropFaceCount" Text="0" FontSize="11" Foreground="#FFFFFF"/>
+                </StackPanel>
             </StackPanel>
 
-            <Separator Background="{StaticResource BorderBrush}"/>
+            <Border Background="#3F3F3F" Height="1" Margin="0,8,0,8"/>
 
-            <!-- ==================== MODEL INFO ==================== -->
-            <StackPanel Orientation="Vertical" Spacing="8">
-                <TextBlock
-                    Text="Model Info"
-                    FontSize="14"
-                    FontWeight="SemiBold"
-                    Foreground="{StaticResource AccentBrush}"/>
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="90"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- File Name -->
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Text="File:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        x:Name="PropModelFile"
-                        Text="None"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"
-                        TextTrimming="CharacterEllipsis"/>
-
-                    <!-- Vertices -->
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Text="Vertices:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        x:Name="PropVertexCount"
-                        Text="0"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"/>
-
-                    <!-- Faces -->
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Text="Faces:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        x:Name="PropFaceCount"
-                        Text="0"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"/>
-
-                    <!-- Bounds -->
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="0"
-                        Text="Bounds:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        x:Name="PropBounds"
-                        Text="(0, 0, 0)"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"/>
-
-                    <!-- Format -->
-                    <TextBlock
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Text="Format:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="4"
-                        Grid.Column="1"
-                        x:Name="PropFormat"
-                        Text="FBX"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"/>
-
-                    <!-- Memory -->
-                    <TextBlock
-                        Grid.Row="5"
-                        Grid.Column="0"
-                        Text="Memory:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <TextBlock
-                        Grid.Row="5"
-                        Grid.Column="1"
-                        x:Name="PropModelMemory"
-                        Text="0 MB"
-                        FontSize="12"
-                        Foreground="{StaticResource TextPrimaryBrush}"/>
-                </Grid>
-            </StackPanel>
-
-            <Separator Background="{StaticResource BorderBrush}"/>
-
-            <!-- ==================== TRANSFORM ==================== -->
+            <!-- TRANSFORM -->
             <StackPanel Orientation="Vertical" Spacing="8">
                 <TextBlock
                     Text="Transform"
-                    FontSize="14"
+                    FontSize="12"
                     FontWeight="SemiBold"
-                    Foreground="{StaticResource AccentBrush}"/>
+                    Foreground="#4FC3F7"/>
 
-                <!-- Position -->
-                <StackPanel Orientation="Vertical" Spacing="4">
-                    <TextBlock
-                        Text="Position"
-                        FontSize="11"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Grid Spacing="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="X:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="1" x:Name="PropPosX" Value="0" SpinButtonPlacementMode="Compact" FontSize="11"/>
-
-                        <TextBlock Grid.Column="2" Text="Y:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="3" x:Name="PropPosY" Value="0" SpinButtonPlacementMode="Compact" FontSize="11"/>
-
-                        <TextBlock Grid.Column="4" Text="Z:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="5" x:Name="PropPosZ" Value="0" SpinButtonPlacementMode="Compact" FontSize="11"/>
-                    </Grid>
-                </StackPanel>
-
-                <!-- Rotation -->
-                <StackPanel Orientation="Vertical" Spacing="4">
-                    <TextBlock
-                        Text="Rotation (°)"
-                        FontSize="11"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Grid Spacing="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="X:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="1" x:Name="PropRotX" Value="0" SpinButtonPlacementMode="Compact" FontSize="11"/>
-
-                        <TextBlock Grid.Column="2" Text="Y:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="3" x:Name="PropRotY" Value="0" SpinButtonPlacementMode="Compact" FontSize="11"/>
-
-                        <TextBlock Grid.Column="4" Text="Z:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="5" x:Name="PropRotZ" Value="0" SpinButtonPlacementMode="Compact" FontSize="11"/>
-                    </Grid>
-                </StackPanel>
-
-                <!-- Scale -->
-                <StackPanel Orientation="Vertical" Spacing="4">
-                    <TextBlock
-                        Text="Scale"
-                        FontSize="11"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Grid Spacing="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="X:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="1" x:Name="PropScaleX" Value="1" SpinButtonPlacementMode="Compact" FontSize="11"/>
-
-                        <TextBlock Grid.Column="2" Text="Y:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="3" x:Name="PropScaleY" Value="1" SpinButtonPlacementMode="Compact" FontSize="11"/>
-
-                        <TextBlock Grid.Column="4" Text="Z:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        <NumberBox Grid.Column="5" x:Name="PropScaleZ" Value="1" SpinButtonPlacementMode="Compact" FontSize="11"/>
-                    </Grid>
-                </StackPanel>
-            </StackPanel>
-
-            <Separator Background="{StaticResource BorderBrush}"/>
-
-            <!-- ==================== MATERIAL ==================== -->
-            <StackPanel Orientation="Vertical" Spacing="8">
-                <TextBlock
-                    Text="Material"
-                    FontSize="14"
-                    FontWeight="SemiBold"
-                    Foreground="{StaticResource AccentBrush}"/>
-
-                <Grid>
+                <Grid ColumnSpacing="8" RowSpacing="6">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="50"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -325,121 +57,49 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Metallic -->
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Text="Metallic:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Slider
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        x:Name="PropMetallic"
-                        Minimum="0"
-                        Maximum="1"
-                        Value="0"
-                        FontSize="12"/>
+                    <!-- Position -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Pos X:" FontSize="11" Foreground="#A0A0A0" VerticalAlignment="Center"/>
+                    <NumberBox Grid.Row="0" Grid.Column="1" x:Name="PropPosX" Value="0" FontSize="11" SpinButtonPlacementMode="Hidden"/>
 
-                    <!-- Roughness -->
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Text="Roughness:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Slider
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        x:Name="PropRoughness"
-                        Minimum="0"
-                        Maximum="1"
-                        Value="0.5"
-                        FontSize="12"/>
+                    <!-- Rotation -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Rot X:" FontSize="11" Foreground="#A0A0A0" VerticalAlignment="Center"/>
+                    <NumberBox Grid.Row="1" Grid.Column="1" x:Name="PropRotX" Value="0" FontSize="11" SpinButtonPlacementMode="Hidden"/>
 
-                    <!-- AO -->
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Text="Ambient Occ:"
-                        FontSize="12"
-                        Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Slider
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        x:Name="PropAO"
-                        Minimum="0"
-                        Maximum="1"
-                        Value="1"
-                        FontSize="12"/>
+                    <!-- Scale -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Scale:" FontSize="11" Foreground="#A0A0A0" VerticalAlignment="Center"/>
+                    <NumberBox Grid.Row="2" Grid.Column="1" x:Name="PropScale" Value="1" FontSize="11" SpinButtonPlacementMode="Hidden"/>
                 </Grid>
-            </StackPanel>
 
-            <Separator Background="{StaticResource BorderBrush}"/>
-
-            <!-- ==================== CAMERA HELP ==================== -->
-            <StackPanel Orientation="Vertical" Spacing="8">
-                <TextBlock
-                    Text="Camera Controls"
-                    FontSize="14"
-                    FontWeight="SemiBold"
-                    Foreground="{StaticResource AccentBrush}"/>
-
-                <TextBlock
-                    Text="Left Mouse: Orbit around model"
-                    FontSize="11"
-                    Foreground="{StaticResource TextSecondaryBrush}"
-                    TextWrapping="Wrap"/>
-
-                <TextBlock
-                    Text="Shift + Left Mouse: Pan the view"
-                    FontSize="11"
-                    Foreground="{StaticResource TextSecondaryBrush}"
-                    TextWrapping="Wrap"/>
-
-                <TextBlock
-                    Text="Mouse Wheel: Zoom in/out"
-                    FontSize="11"
-                    Foreground="{StaticResource TextSecondaryBrush}"
-                    TextWrapping="Wrap"/>
-
-                <TextBlock
-                    Text="F, T, S, I: Front, Top, Side, Iso views"
-                    FontSize="11"
-                    Foreground="{StaticResource TextSecondaryBrush}"
-                    TextWrapping="Wrap"/>
-            </StackPanel>
-
-            <Separator Background="{StaticResource BorderBrush}"/>
-
-            <!-- ==================== QUICK ACTIONS ==================== -->
-            <StackPanel Orientation="Vertical" Spacing="8">
                 <Button
                     x:Name="BtnResetTransform"
-                    Content="Reset Transform"
-                    Background="{StaticResource SecondaryBrush}"
-                    Foreground="{StaticResource TextPrimaryBrush}"
+                    Content="Reset"
                     Click="BtnResetTransform_Click"
-                    HorizontalAlignment="Stretch"
-                    FontSize="12"/>
+                    Padding="8,6"
+                    FontSize="11"
+                    Width="100"
+                    HorizontalAlignment="Left"
+                    Background="#404040"/>
+            </StackPanel>
 
-                <Button
-                    x:Name="BtnFitView"
-                    Content="Fit to View"
-                    Background="{StaticResource SecondaryBrush}"
-                    Foreground="{StaticResource TextPrimaryBrush}"
-                    Click="BtnFitView_Click"
-                    HorizontalAlignment="Stretch"
-                    FontSize="12"/>
+            <Border Background="#3F3F3F" Height="1" Margin="0,8,0,8"/>
 
-                <Button
-                    x:Name="BtnResetCamera"
-                    Content="Reset Camera"
-                    Background="{StaticResource SecondaryBrush}"
-                    Foreground="{StaticResource TextPrimaryBrush}"
-                    Click="BtnResetCamera_Click"
-                    HorizontalAlignment="Stretch"
-                    FontSize="12"/>
+            <!-- STATISTICS -->
+            <StackPanel Orientation="Vertical" Spacing="8">
+                <TextBlock
+                    Text="Statistics"
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    Foreground="#4FC3F7"/>
+
+                <StackPanel Orientation="Vertical" Spacing="4">
+                    <TextBlock Text="FPS:" FontSize="11" Foreground="#A0A0A0"/>
+                    <TextBlock x:Name="PropFPS" Text="0" FontSize="11" Foreground="#00FF00"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Spacing="4">
+                    <TextBlock Text="GPU Memory:" FontSize="11" Foreground="#A0A0A0"/>
+                    <TextBlock x:Name="PropGPUMemory" Text="0 MB" FontSize="11" Foreground="#FFFFFF"/>
+                </StackPanel>
             </StackPanel>
 
         </StackPanel>

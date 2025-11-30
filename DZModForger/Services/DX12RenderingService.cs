@@ -1,111 +1,138 @@
-﻿using Microsoft.UI.Xaml;
-using System;
+﻿using System;
 using System.Diagnostics;
 
-namespace DZModForger.Services
+namespace DZModForger.Interop
 {
+    /// <summary>
+    /// Camera and rendering state management service
+    /// </summary>
     public class DX12RenderingService : IDisposable
     {
-        private bool _initialized = false;
-        private float _cameraZoom = 1.0f;
-        private float _cameraRotationX = 0.0f;
-        private float _cameraRotationY = 0.0f;
+        private bool _isInitialized = false;
+        private float _cameraYaw = 0f;
+        private float _cameraPitch = 0f;
+        private float _cameraZoom = 1f;
+        private float _cameraDistance = 5f;
 
         public DX12RenderingService()
         {
-            Debug.WriteLine("[DX12RENDERINGSERVICE] DX12RenderingService created");
+            Debug.WriteLine("[DX12_RENDERING] Service initialized");
+            _isInitialized = true;
         }
 
-        public bool Initialize(IntPtr hwnd, uint width, uint height)
+        /// <summary>
+        /// Rotate camera (orbit mode)
+        /// </summary>
+        public void RotateCamera(float deltaYaw, float deltaPitch)
         {
             try
             {
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Initializing with hwnd={hwnd}, {width}x{height}");
+                _cameraYaw += deltaYaw * 0.5f;
+                _cameraPitch += deltaPitch * 0.5f;
 
-                if (hwnd == IntPtr.Zero || width == 0 || height == 0)
-                {
-                    Debug.WriteLine("[DX12RENDERINGSERVICE] Invalid parameters");
-                    return false;
-                }
+                // Clamp pitch to avoid gimbal lock
+                if (_cameraPitch > 89f) _cameraPitch = 89f;
+                if (_cameraPitch < -89f) _cameraPitch = -89f;
 
-                _initialized = true;
-                Debug.WriteLine("[DX12RENDERINGSERVICE] ✓ Initialization successful");
-                return true;
+                Debug.WriteLine($"[DX12_RENDERING] Rotate - Yaw: {_cameraYaw:F2}°, Pitch: {_cameraPitch:F2}°");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] ❌ Exception in Initialize: {ex.Message}");
-                return false;
+                Debug.WriteLine($"[DX12_RENDERING] RotateCamera error: {ex.Message}");
             }
         }
 
-        public void SetCameraZoom(float factor)
-        {
-            try
-            {
-                if (factor <= 0)
-                    return;
-
-                _cameraZoom *= factor;
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Camera zoom: {_cameraZoom:F2}");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Exception in SetCameraZoom: {ex.Message}");
-            }
-        }
-
-        public void RotateCamera(float deltaX, float deltaY)
-        {
-            try
-            {
-                _cameraRotationX += deltaX * 0.5f;
-                _cameraRotationY += deltaY * 0.5f;
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Camera rotation: X={_cameraRotationX:F1}, Y={_cameraRotationY:F1}");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Exception in RotateCamera: {ex.Message}");
-            }
-        }
-
+        /// <summary>
+        /// Pan camera (lateral movement)
+        /// </summary>
         public void PanCamera(float deltaX, float deltaY)
         {
             try
             {
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Camera pan: X={deltaX:F1}, Y={deltaY:F1}");
+                Debug.WriteLine($"[DX12_RENDERING] Pan - X: {deltaX:F2}, Y: {deltaY:F2}");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Exception in PanCamera: {ex.Message}");
+                Debug.WriteLine($"[DX12_RENDERING] PanCamera error: {ex.Message}");
             }
         }
 
-        public void Render()
+        /// <summary>
+        /// Zoom camera (scale distance)
+        /// </summary>
+        public void SetCameraZoom(float zoomFactor)
         {
             try
             {
-                if (!_initialized)
-                    return;
+                _cameraZoom *= zoomFactor;
 
-                // Rendering logic would go here
+                // Clamp zoom to reasonable values
+                if (_cameraZoom < 0.1f) _cameraZoom = 0.1f;
+                if (_cameraZoom > 100f) _cameraZoom = 100f;
+
+                Debug.WriteLine($"[DX12_RENDERING] Zoom: {_cameraZoom:F2}");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Exception in Render: {ex.Message}");
+                Debug.WriteLine($"[DX12_RENDERING] SetCameraZoom error: {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// Reset camera to default state
+        /// </summary>
+        public void ResetCamera()
+        {
+            try
+            {
+                _cameraYaw = 0f;
+                _cameraPitch = 0f;
+                _cameraZoom = 1f;
+                _cameraDistance = 5f;
+                Debug.WriteLine("[DX12_RENDERING] Camera reset");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[DX12_RENDERING] ResetCamera error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Get current camera yaw
+        /// </summary>
+        public float CameraYaw => _cameraYaw;
+
+        /// <summary>
+        /// Get current camera pitch
+        /// </summary>
+        public float CameraPitch => _cameraPitch;
+
+        /// <summary>
+        /// Get current camera zoom
+        /// </summary>
+        public float CameraZoom => _cameraZoom;
+
+        /// <summary>
+        /// Get current camera distance
+        /// </summary>
+        public float CameraDistance => _cameraDistance;
+
+        /// <summary>
+        /// Cleanup resources
+        /// </summary>
         public void Dispose()
         {
             try
             {
-                Debug.WriteLine("[DX12RENDERINGSERVICE] Disposing");
-                _initialized = false;
+                if (_isInitialized)
+                {
+                    _isInitialized = false;
+                    Debug.WriteLine("[DX12_RENDERING] Disposed");
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[DX12RENDERINGSERVICE] Exception in Dispose: {ex.Message}");
+                Debug.WriteLine($"[DX12_RENDERING] Dispose error: {ex.Message}");
             }
         }
     }
