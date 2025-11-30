@@ -40,9 +40,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DX12Viewport.cpp">
-      <Filter>DX12Engine\2.Rendering\C++</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Core\C++</Filter>
     </ClCompile>
@@ -52,5 +49,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="DX12Viewport.xaml">
+      <Filter>DX12Engine\2.Rendering\C++</Filter>
+    </Page>
   </ItemGroup>
 </Project>

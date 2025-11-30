@@ -13,8 +13,8 @@ namespace DZModForger.Services
         private readonly Dictionary<string, ModelData> _cachedModels;
         private bool _disposed = false;
 
-        public event EventHandler<ModelLoadedEventArgs> ModelLoaded;
-        public event EventHandler<ModelLoadErrorEventArgs> ModelLoadError;
+        public event EventHandler<ModelLoadedEventArgs>? ModelLoaded;
+        public event EventHandler<ModelLoadErrorEventArgs>? ModelLoadError;
 
         public ModelLoaderService()
         {
@@ -79,8 +79,8 @@ namespace DZModForger.Services
                 {
                     FilePath = filePath,
                     IsCached = false,
-                    VertexCount = modelData.VertexCount,
-                    FaceCount = modelData.FaceCount
+                    VertexCount = (uint)modelData.VertexCount,
+                    FaceCount = (uint)modelData.FaceCount
                 });
 
                 return modelData;
@@ -119,19 +119,5 @@ namespace DZModForger.Services
 
             _disposed = true;
         }
-    }
-
-    public class ModelLoadedEventArgs : EventArgs
-    {
-        public string FilePath { get; set; }
-        public bool IsCached { get; set; }
-        public int VertexCount { get; set; }
-        public int FaceCount { get; set; }
-    }
-
-    public class ModelLoadErrorEventArgs : EventArgs
-    {
-        public string FilePath { get; set; }
-        public Exception Exception { get; set; }
     }
 }

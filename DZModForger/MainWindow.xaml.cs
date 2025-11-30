@@ -1,11 +1,13 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+﻿using DZModForger.Interop;
 using DZModForger.Services;
-using DZModForger.Interop;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Storage.Pickers;
-using System.Diagnostics;
+using WinRT;
+using WinRT.Interop;
 
 namespace DZModForger
 {
@@ -26,50 +28,153 @@ namespace DZModForger
         {
             try
             {
-                Debug.WriteLine("[MainWindow] Initializing services...");
+                Debug.WriteLine("[MainWindow] ════════════════════════════════════════════════════════════");
+                Debug.WriteLine("[MainWindow] InitializeServices started");
+                Debug.WriteLine("[MainWindow] ════════════════════════════════════════════════════════════");
 
-                _modelLoaderService = new ModelLoaderService();
-                _modelLoaderService.ModelLoaded += OnModelLoaded;
-                _modelLoaderService.ModelLoadError += OnModelLoadError;
+                // ✅ STEP 1: INITIALIZE DX12 INTEROP HELPER (LOAD DLL FIRST)
+                Debug.WriteLine("[MainWindow] STEP 1: Initializing DX12InteropHelper...");
+                try
+                {
+                    if (!DX12InteropHelper.Initialize())
+                    {
+                        Debug.WriteLine("[MainWindow] ❌ DX12InteropHelper.Initialize() returned false");
+                        if (StatusText != null)
+                            StatusText.Text = "❌ CRITICAL: Cannot initialize DX12 interop";
+                        throw new InvalidOperationException("DX12InteropHelper initialization failed");
+                    }
 
-                _viewportHost = new DX12ViewportHost();
-                _viewportHost.RenderError += OnViewportRenderError;
+                    Debug.WriteLine("[MainWindow] ✓ DX12InteropHelper initialized successfully");
+                    Debug.WriteLine($"[MainWindow] DX12 Engine Version: {DX12InteropHelper.GetEngineVersion()}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[MainWindow] ❌ Failed to initialize DX12InteropHelper: {ex.Message}");
+                    Debug.WriteLine($"[MainWindow] Exception type: {ex.GetType().Name}");
+                    Debug.WriteLine($"[MainWindow] Stack trace: {ex.StackTrace}");
 
-                _statsUpdateTimer = new DispatcherTimer();
-                _statsUpdateTimer.Interval = TimeSpan.FromMilliseconds(16); // ~60 FPS
-                _statsUpdateTimer.Tick += OnStatsUpdateTick;
-                _statsUpdateTimer.Start();
+                    if (StatusText != null)
+                        StatusText.Text = $"❌ CRITICAL: DX12 init failed - {ex.Message}";
 
+                    throw; // STOP HERE - don't continue if DX12 won't initialize
+                }
+
+                // ✅ STEP 2: Create model loader service
+                Debug.WriteLine("[MainWindow] STEP 2: Creating ModelLoaderService...");
+                try
+                {
+                    _modelLoaderService = new ModelLoaderService();
+                    _modelLoaderService.ModelLoaded += OnModelLoaded;
+                    _modelLoaderService.ModelLoadError += OnModelLoadError;
+                    Debug.WriteLine("[MainWindow] ✓ ModelLoaderService created");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[MainWindow] ❌ Failed to create ModelLoaderService: {ex.Message}");
+                    throw;
+                }
+
+                // ✅ STEP 3: Create viewport host
+                Debug.WriteLine("[MainWindow] STEP 3: Creating DX12ViewportHost...");
+                try
+                {
+                    _viewportHost = new DX12ViewportHost();
+                    _viewportHost.RenderError += OnViewportRenderError;
+                    Debug.WriteLine("[MainWindow] ✓ DX12ViewportHost created");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[MainWindow] ❌ Failed to create DX12ViewportHost: {ex.Message}");
+                    throw;
+                }
+
+                // ✅ STEP 4: Create stats timer
+                Debug.WriteLine("[MainWindow] STEP 4: Creating DispatcherTimer...");
+                try
+                {
+                    _statsUpdateTimer = new DispatcherTimer();
+                    _statsUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
+                    _statsUpdateTimer.Tick += OnStatsUpdateTick;
+                    Debug.WriteLine("[MainWindow] ✓ DispatcherTimer created");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[MainWindow] ❌ Failed to create DispatcherTimer: {ex.Message}");
+                    throw;
+                }
+
+                // Register window events
                 this.Closed += Window_Closed;
                 this.Activated += OnWindowActivated;
 
-                // Initialize viewport with window handle
-                if (ViewportCanvas != null && _viewportHost != null)
+                // ✅ STEP 5: Initialize viewport
+                Debug.WriteLine("[MainWindow] STEP 5: Initializing viewport...");
+                try
                 {
-                    IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+                    if (ViewportCanvas == null)
+                        throw new InvalidOperationException("ViewportCanvas is null");
+
+                    if (_viewportHost == null)
+                        throw new InvalidOperationException("DX12ViewportHost is null");
+
+                    IntPtr hwnd = WindowNative.GetWindowHandle(this);
                     Debug.WriteLine($"[MainWindow] Window HWND: {hwnd}");
 
-                    uint width = 1920;
-                    uint height = 1080;
+                    // Get actual window dimensions
+                    uint width = (uint)this.AppWindow.ClientSize.Width;
+                    uint height = (uint)this.AppWindow.ClientSize.Height;
 
+                    if (width == 0) width = 1920;  // Fallback
+                    if (height == 0) height = 1080; // Fallback
+
+                    Debug.WriteLine($"[MainWindow] Window dimensions: {width}x{height}");
+                    Debug.WriteLine("[MainWindow] Calling _viewportHost.Initialize()...");
+
+                    // Initialize the viewport with the DX12 engine
                     _viewportHost.Initialize(hwnd, width, height);
-                    Debug.WriteLine("[MainWindow] Viewport initialized successfully");
+
+                    Debug.WriteLine("[MainWindow] ✓ Viewport initialized successfully");
+
+                    // Start statistics update timer
+                    _statsUpdateTimer.Start();
+                    Debug.WriteLine("[MainWindow] ✓ Stats timer started");
 
                     if (StatusText != null)
-                    {
-                        StatusText.Text = "Viewport initialized - Ready to load models";
-                    }
+                        StatusText.Text = "✓ Ready - Load a model";
                 }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[MainWindow] ❌ Viewport initialization failed: {ex.Message}");
+                    Debug.WriteLine($"[MainWindow] Exception type: {ex.GetType().Name}");
+                    Debug.WriteLine($"[MainWindow] Stack trace: {ex.StackTrace}");
+
+                    if (StatusText != null)
+                        StatusText.Text = $"❌ Viewport init failed: {ex.Message}";
+
+                    throw; // Re-throw so we see the error
+                }
+
+                Debug.WriteLine("[MainWindow] ════════════════════════════════════════════════════════════");
+                Debug.WriteLine("[MainWindow] ✅ INITIALIZATION COMPLETE - READY FOR USE");
+                Debug.WriteLine("[MainWindow] ════════════════════════════════════════════════════════════");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[MainWindow] Initialization error: {ex.Message}\n{ex.StackTrace}");
+                Debug.WriteLine("[MainWindow] ════════════════════════════════════════════════════════════");
+                Debug.WriteLine("[MainWindow] ❌ FATAL: InitializeServices failed");
+                Debug.WriteLine($"[MainWindow] Exception: {ex.Message}");
+                Debug.WriteLine($"[MainWindow] Type: {ex.GetType().FullName}");
+                Debug.WriteLine($"[MainWindow] Stack: {ex.StackTrace}");
+                Debug.WriteLine("[MainWindow] ════════════════════════════════════════════════════════════");
+
                 if (StatusText != null)
-                {
-                    StatusText.Text = $"Initialization error: {ex.Message}";
-                }
+                    StatusText.Text = $"❌ FATAL ERROR: {ex.Message}";
+
+                // Don't throw - let app continue so user can see error message
             }
         }
+
+        // ==================== EVENT HANDLERS - MODEL LOADING ====================
 
         private void OnModelLoaded(object? sender, ModelLoadedEventArgs e)
         {
@@ -77,13 +182,30 @@ namespace DZModForger
             {
                 try
                 {
+                    Debug.WriteLine($"[MainWindow] Model loaded: {e.FilePath}");
+
+                    string fileName = System.IO.Path.GetFileName(e.FilePath ?? "Unknown");
+
                     if (StatusText != null)
-                    {
-                        StatusText.Text = $"Model loaded: {e.FilePath ?? "Unknown"}";
-                    }
+                        StatusText.Text = $"✓ Loaded: {fileName}";
+
                     if (TxtModelFile != null)
+                        TxtModelFile.Text = fileName;
+
+                    // Load into viewport
+                    if (_viewportHost != null && e.FilePath != null)
                     {
-                        TxtModelFile.Text = System.IO.Path.GetFileName(e.FilePath ?? "");
+                        try
+                        {
+                            _viewportHost.LoadModel(e.FilePath);
+                            Debug.WriteLine("[MainWindow] ✓ Model loaded into viewport");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"[MainWindow] ⚠ Error loading model into viewport: {ex.Message}");
+                            if (StatusText != null)
+                                StatusText.Text = $"⚠ Load warning: {ex.Message}";
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -99,14 +221,15 @@ namespace DZModForger
             {
                 try
                 {
+                    string errorMsg = e.Exception?.Message ?? "Unknown error";
+                    Debug.WriteLine($"[MainWindow] Model load error: {errorMsg}");
+
                     if (StatusText != null)
-                    {
-                        StatusText.Text = $"Error loading model: {e.Exception?.Message ?? "Unknown error"}";
-                    }
+                        StatusText.Text = $"❌ Error: {errorMsg}";
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"[OnModelLoadError] Error: {ex.Message}");
+                    Debug.WriteLine($"[OnModelLoadError] Exception: {ex.Message}");
                 }
             });
         }
@@ -117,14 +240,15 @@ namespace DZModForger
             {
                 try
                 {
+                    string errorMsg = e.Exception?.Message ?? "Unknown render error";
+                    Debug.WriteLine($"[MainWindow] Viewport render error: {errorMsg}");
+
                     if (StatusText != null)
-                    {
-                        StatusText.Text = $"Render error: {e.Exception?.Message ?? "Unknown error"}";
-                    }
+                        StatusText.Text = $"⚠ Render Error: {errorMsg}";
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"[OnViewportRenderError] Error: {ex.Message}");
+                    Debug.WriteLine($"[OnViewportRenderError] Exception: {ex.Message}");
                 }
             });
         }
@@ -133,12 +257,20 @@ namespace DZModForger
         {
             try
             {
-                if (_viewportHost != null && TxtFPS != null)
+                if (_viewportHost != null)
                 {
-                    // There is no GetFrameRate method in DX12ViewportHost.
-                    // You need to implement this method or remove this line.
-                    // For now, display a placeholder or remove the FPS update.
-                    TxtFPS.Text = "N/A";
+                    float fps = _viewportHost.GetFrameRate();
+                    uint vertexCount = _viewportHost.GetVertexCount();
+                    uint triangleCount = _viewportHost.GetTriangleCount();
+
+                    if (TxtFPS != null)
+                        TxtFPS.Text = fps > 0 ? fps.ToString("F1") : "N/A";
+
+                    if (TxtVertexCount != null && vertexCount > 0)
+                        TxtVertexCount.Text = vertexCount.ToString("N0");
+
+                    if (TxtFaceCount != null && triangleCount > 0)
+                        TxtFaceCount.Text = triangleCount.ToString("N0");
                 }
             }
             catch (Exception ex)
@@ -147,79 +279,65 @@ namespace DZModForger
             }
         }
 
-        // ==================== EVENT HANDLERS ====================
-
-        private void ViewportHost_RenderError(object sender, RenderErrorEventArgs e)
-        {
-            if (StatusText != null)
-            {
-                StatusText.Text = $"Viewport error: {e.Exception?.Message ?? "Unknown error"}";
-            }
-        }
+        // ==================== EVENT HANDLERS - UI CONTROLS ====================
 
         private void ChkShowGrid_Checked(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Grid enabled");
             if (StatusText != null)
-            {
                 StatusText.Text = "Grid enabled";
-            }
         }
 
         private void ChkShowGrid_Unchecked(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Grid disabled");
             if (StatusText != null)
-            {
                 StatusText.Text = "Grid disabled";
-            }
         }
 
         private void BtnShadeWire_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Wireframe mode selected");
             if (StatusText != null)
-            {
-                StatusText.Text = "Switched to wireframe mode";
-            }
+                StatusText.Text = "Wireframe mode";
         }
 
         private void BtnShadeSolid_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Solid mode selected");
             if (StatusText != null)
-            {
-                StatusText.Text = "Switched to solid mode";
-            }
+                StatusText.Text = "Solid mode";
         }
 
         private void BtnShadeRender_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Render mode selected");
             if (StatusText != null)
-            {
-                StatusText.Text = "Switched to render mode";
-            }
+                StatusText.Text = "Render mode";
         }
 
         private void BtnObjectMode_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Object mode selected");
             if (StatusText != null)
-            {
-                StatusText.Text = "Switched to object mode";
-            }
+                StatusText.Text = "Object mode";
         }
 
         private void BtnEditMode_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Edit mode selected");
             if (StatusText != null)
-            {
-                StatusText.Text = "Switched to edit mode";
-            }
+                StatusText.Text = "Edit mode";
         }
 
         private void BtnSculptMode_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Sculpt mode selected");
             if (StatusText != null)
-            {
-                StatusText.Text = "Switched to sculpt mode";
-            }
+                StatusText.Text = "Sculpt mode";
         }
+
+        // ==================== EVENT HANDLERS - MENU ====================
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e)
         {
@@ -228,10 +346,9 @@ namespace DZModForger
 
         private void MenuResetCamera_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Camera reset");
             if (StatusText != null)
-            {
                 StatusText.Text = "Camera reset";
-            }
             _viewportHost?.SetCamera(5.0f, 0.0f, 30.0f, 0.0f, 0.0f, 0.0f);
         }
 
@@ -271,26 +388,33 @@ namespace DZModForger
         {
             try
             {
+                Debug.WriteLine("[MainWindow] Opening file picker...");
                 var picker = new FileOpenPicker();
                 picker.FileTypeFilter.Add(".fbx");
                 picker.FileTypeFilter.Add(".obj");
                 picker.FileTypeFilter.Add(".dae");
+                picker.FileTypeFilter.Add(".gltf");
+                picker.FileTypeFilter.Add(".glb");
 
-                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-                WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+                var hwnd = WindowNative.GetWindowHandle(this);
+                InitializeWithWindow.Initialize(picker, hwnd);
 
                 var file = await picker.PickSingleFileAsync();
                 if (file != null && _modelLoaderService != null)
                 {
+                    Debug.WriteLine($"[MainWindow] Selected file: {file.Path}");
                     await _modelLoaderService.LoadModelAsync(file.Path);
+                }
+                else
+                {
+                    Debug.WriteLine("[MainWindow] File picker cancelled or no file selected");
                 }
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"[MainWindow] Error opening file: {ex.Message}");
                 if (StatusText != null)
-                {
-                    StatusText.Text = $"Error opening file: {ex.Message}";
-                }
+                    StatusText.Text = $"❌ Error: {ex.Message}";
             }
         }
 
@@ -298,17 +422,15 @@ namespace DZModForger
         {
             try
             {
+                Debug.WriteLine("[MainWindow] Saving project...");
                 if (StatusText != null)
-                {
-                    StatusText.Text = "Project saved";
-                }
+                    StatusText.Text = "✓ Project saved";
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"[MainWindow] Error saving: {ex.Message}");
                 if (StatusText != null)
-                {
-                    StatusText.Text = $"Error saving project: {ex.Message}";
-                }
+                    StatusText.Text = $"❌ Error: {ex.Message}";
             }
         }
 
@@ -316,17 +438,15 @@ namespace DZModForger
         {
             try
             {
+                Debug.WriteLine("[MainWindow] Exporting model...");
                 if (StatusText != null)
-                {
-                    StatusText.Text = "Model exported";
-                }
+                    StatusText.Text = "✓ Model exported";
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"[MainWindow] Error exporting: {ex.Message}");
                 if (StatusText != null)
-                {
-                    StatusText.Text = $"Error exporting model: {ex.Message}";
-                }
+                    StatusText.Text = $"❌ Error: {ex.Message}";
             }
         }
 
@@ -339,7 +459,17 @@ namespace DZModForger
                     Title = "About ModForgerQuantum",
                     Content = new TextBlock
                     {
-                        Text = "ModForgerQuantum v1.0.0\n\nProfessional 3D Model Editor for DayZ\n\nBuilt with DirectX 12 and WinUI 3",
+                        Text = "ModForgerQuantum v1.0.0\n" +
+                               "Professional 3D Model Editor for DayZ\n\n" +
+                               "Built with:\n" +
+                               "• DirectX 12 Graphics API\n" +
+                               "• Windows App SDK & WinUI 3\n" +
+                               "• C++ Native Engine\n\n" +
+                               "Features:\n" +
+                               "• Real-time 3D viewport\n" +
+                               "• FBX/OBJ/DAE import\n" +
+                               "• Multiple shading modes\n" +
+                               "• Property editing",
                         TextWrapping = TextWrapping.Wrap
                     },
                     PrimaryButtonText = "OK",
@@ -363,7 +493,7 @@ namespace DZModForger
                     Title = "Preferences",
                     Content = new TextBlock
                     {
-                        Text = "Preferences not yet implemented",
+                        Text = "Preferences panel coming soon...",
                         TextWrapping = TextWrapping.Wrap
                     },
                     PrimaryButtonText = "OK",
@@ -384,17 +514,29 @@ namespace DZModForger
             {
                 _isFullscreen = !_isFullscreen;
 
-                if (StatusText != null)
+                if (this.AppWindow.Presenter is Microsoft.UI.Windowing.OverlappedPresenter presenter)
                 {
-                    StatusText.Text = _isFullscreen ? "Fullscreen enabled" : "Fullscreen disabled";
+                    if (_isFullscreen)
+                    {
+                        presenter.Maximize();
+                        Debug.WriteLine("[MainWindow] Fullscreen enabled");
+                        if (StatusText != null)
+                            StatusText.Text = "Fullscreen enabled";
+                    }
+                    else
+                    {
+                        presenter.Restore();
+                        Debug.WriteLine("[MainWindow] Fullscreen disabled");
+                        if (StatusText != null)
+                            StatusText.Text = "Fullscreen disabled";
+                    }
                 }
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"[MainWindow] Error toggling fullscreen: {ex.Message}");
                 if (StatusText != null)
-                {
-                    StatusText.Text = $"Error toggling fullscreen: {ex.Message}";
-                }
+                    StatusText.Text = $"❌ Fullscreen error: {ex.Message}";
             }
         }
 
@@ -402,13 +544,22 @@ namespace DZModForger
         {
             try
             {
+                Debug.WriteLine("[MainWindow] ════════════════════════════════════════════════════════════");
+                Debug.WriteLine("[MainWindow] Window closing - cleaning up resources...");
+
                 _statsUpdateTimer?.Stop();
                 _modelLoaderService?.Dispose();
                 _viewportHost?.Shutdown();
+
+                // Clean up DX12 interop
+                DX12InteropHelper.Shutdown();
+
+                Debug.WriteLine("[MainWindow] ✓ Cleanup complete");
+                Debug.WriteLine("[MainWindow] ════════════════════════════════════════════════════════════");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[Window_Closed] Error: {ex.Message}");
+                Debug.WriteLine($"[Window_Closed] Error during cleanup: {ex.Message}");
             }
         }
 
@@ -417,6 +568,7 @@ namespace DZModForger
             try
             {
                 // Window activation handling
+                Debug.WriteLine($"[MainWindow] Window activated: {args.WindowActivationState}");
             }
             catch (Exception ex)
             {

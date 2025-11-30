@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>DZModForger</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -92,6 +92,6 @@
     <ApplicationIcon>Assets\DZModForger.ico</ApplicationIcon>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist &quot;$(SolutionDir)DX12Engine\$(Configuration)\DX12Engine.dll&quot; (&#xD;&#xA;    echo Copying DX12Engine.dll to output directory...&#xD;&#xA;    xcopy /Y /I &quot;$(SolutionDir)DX12Engine\$(Configuration)\DX12Engine.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;)" />
+    <Exec Command="if exist &quot;$(SolutionDir)x64\$(Configuration)\DX12Engine.dll&quot; (&#xD;&#xA;    echo Copying DX12Engine.dll...&#xD;&#xA;    xcopy /Y &quot;$(SolutionDir)x64\$(Configuration)\DX12Engine.dll&quot; &quot;$(OutputPath)&quot;&#xD;&#xA;) else (&#xD;&#xA;    echo WARNING: DX12Engine.dll not found&#xD;&#xA;)&#xD;&#xA;" />
   </Target>
 </Project>

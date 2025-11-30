@@ -1,18 +1,10 @@
-// DX12Viewport.h - COMPLETE CORRECTED HEADER
-
 #pragma once
 
 #include "framework.h"
-#include <vector>
-#include <cstdarg>
 
-#define FRAME_COUNT 3
-
-// ==================== COM INTERFACE ====================
-
-extern const GUID IID_ID3D12Viewport;
-extern const GUID CLSID_DX12Viewport;
-
+// ==================== GUID DEFINITIONS ====================
+extern "C" const IID IID_ID3D12Viewport;
+extern "C" const CLSID CLSID_DX12Viewport;
 // ==================== VERTEX STRUCTURE ====================
 
 struct Vertex
@@ -36,21 +28,51 @@ struct ConstantBuffer
 
 // ==================== COM INTERFACE DEFINITION ====================
 
-MIDL_INTERFACE("A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D")
+MIDL_INTERFACE("12345678-1234-1234-1234-123456789012")
 ID3D12Viewport : public IUnknown
 {
 public:
-    virtual HRESULT STDMETHODCALLTYPE Initialize(HWND hwnd, UINT width, UINT height) = 0;
+    // Initialization
+    virtual HRESULT STDMETHODCALLTYPE Initialize(
+        HWND hwnd,
+        UINT width,
+        UINT height) = 0;
+
     virtual HRESULT STDMETHODCALLTYPE Shutdown() = 0;
+
+    // Rendering
     virtual HRESULT STDMETHODCALLTYPE Render() = 0;
     virtual HRESULT STDMETHODCALLTYPE Present() = 0;
-    virtual HRESULT STDMETHODCALLTYPE Resize(UINT width, UINT height) = 0;
-    virtual HRESULT STDMETHODCALLTYPE SetCamera(float radius, float theta, float phi, float targetX, float targetY, float targetZ) = 0;
-    virtual HRESULT STDMETHODCALLTYPE LoadFBX(const char* filePath) = 0;
-    virtual HRESULT STDMETHODCALLTYPE LoadOBJ(const char* filePath) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetFrameRate(float* pFps) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetVertexCount(UINT* pCount) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetTriangleCount(UINT* pCount) = 0;
+
+    // Viewport Control
+    virtual HRESULT STDMETHODCALLTYPE Resize(
+        UINT width,
+        UINT height) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE SetCamera(
+        float radius,
+        float theta,
+        float phi,
+        float targetX,
+        float targetY,
+        float targetZ) = 0;
+
+    // Model Loading
+    virtual HRESULT STDMETHODCALLTYPE LoadFBX(
+        const char* filePath) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE LoadOBJ(
+        const char* filePath) = 0;
+
+    // Statistics
+    virtual HRESULT STDMETHODCALLTYPE GetFrameRate(
+        float* pFps) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE GetVertexCount(
+        UINT* pCount) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE GetTriangleCount(
+        UINT* pCount) = 0;
 };
 
 // ==================== IMPLEMENTATION CLASS ====================
@@ -63,26 +85,27 @@ public:
     virtual ~DX12Viewport();
 
     // IUnknown Implementation
-    STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
-    STDMETHODIMP_(ULONG) AddRef() override;
-    STDMETHODIMP_(ULONG) Release() override;
+    STDMETHOD(QueryInterface)(REFIID riid, void** ppvObject) override;
+    STDMETHOD_(ULONG, AddRef)() override;
+    STDMETHOD_(ULONG, Release)() override;
 
     // ID3D12Viewport Implementation
-    STDMETHODIMP Initialize(HWND hwnd, UINT width, UINT height) override;
-    STDMETHODIMP Shutdown() override;
-    STDMETHODIMP Render() override;
-    STDMETHODIMP Present() override;
-    STDMETHODIMP Resize(UINT width, UINT height) override;
-    STDMETHODIMP SetCamera(float radius, float theta, float phi, float targetX, float targetY, float targetZ) override;
-    STDMETHODIMP LoadFBX(const char* filePath) override;
-    STDMETHODIMP LoadOBJ(const char* filePath) override;
-    STDMETHODIMP GetFrameRate(float* pFps) override;
-    STDMETHODIMP GetVertexCount(UINT* pCount) override;
-    STDMETHODIMP GetTriangleCount(UINT* pCount) override;
+    STDMETHOD(Initialize)(HWND hwnd, UINT width, UINT height) override;
+    STDMETHOD(Shutdown)() override;
+    STDMETHOD(Render)() override;
+    STDMETHOD(Present)() override;
+    STDMETHOD(Resize)(UINT width, UINT height) override;
+    STDMETHOD(SetCamera)(float radius, float theta, float phi, float targetX, float targetY, float targetZ) override;
+    STDMETHOD(LoadFBX)(const char* filePath) override;
+    STDMETHOD(LoadOBJ)(const char* filePath) override;
+    STDMETHOD(GetFrameRate)(float* pFps) override;
+    STDMETHOD(GetVertexCount)(UINT* pCount) override;
+    STDMETHOD(GetTriangleCount)(UINT* pCount) override;
 
 private:
     // Reference counting
     LONG _refCount;
+    bool _isInitialized;
 
     // Window
     HWND _hwnd;
@@ -94,12 +117,13 @@ private:
     ComPtr<ID3D12CommandQueue> _commandQueue;
     ComPtr<ID3D12CommandAllocator> _commandAllocator;
     ComPtr<ID3D12GraphicsCommandList> _commandList;
-    ComPtr<IDXGISwapChain4> _swapChain;
+    ComPtr<IDXGISwapChain3> _swapChain;
     ComPtr<ID3D12DescriptorHeap> _rtvHeap;
     ComPtr<ID3D12DescriptorHeap> _dsvHeap;
     ComPtr<ID3D12DescriptorHeap> _cbvSrvHeap;
 
     // Render Targets
+    static const UINT FRAME_COUNT = 3;
     ComPtr<ID3D12Resource> _renderTargets[FRAME_COUNT];
     ComPtr<ID3D12Resource> _depthStencilBuffer;
     UINT _rtvDescriptorSize;
@@ -140,14 +164,9 @@ private:
     UINT _vertexCount;
     UINT _triangleCount;
     float _frameTime;
-    bool _isInitialized;
 
     // Private Methods
-    HRESULT InitializeDirectX();
-    HRESULT CreateRenderTargets();
-    HRESULT CreatePipeline();
-    void UpdateCamera();
+    HRESULT InitializeDirectX() { return S_OK; }
     void WaitForGpu();
-    void MoveToNextFrame();
     void LogMessage(const char* format, ...);
 };
