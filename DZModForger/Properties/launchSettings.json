@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DZModForger (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DZModForger (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
