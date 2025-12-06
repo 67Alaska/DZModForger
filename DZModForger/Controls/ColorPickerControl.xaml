@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DZModForger.Controls.ColorPickerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="300"
+    Height="Auto">
+
+    <StackPanel Spacing="8">
+        <TextBlock 
+            x:Name="LabelText"
+            Text="Color" 
+            FontSize="12"
+            FontWeight="SemiBold" />
+
+        <Grid ColumnDefinitions="*,60" ColumnSpacing="8">
+            <!-- Color Hex Input -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Hex Color" FontSize="11" Opacity="0.7" />
+                <TextBox 
+                    x:Name="HexInput"
+                    PlaceholderText="#RRGGBBAA"
+                    TextChanged="HexInput_TextChanged"
+                    Padding="8,6" />
+            </StackPanel>
+
+            <!-- Color Preview Button -->
+            <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Bottom">
+                <Button 
+                    x:Name="ColorPreviewButton"
+                    Content="●"
+                    FontSize="32"
+                    Padding="0"
+                    Height="38"
+                    VerticalAlignment="Center"
+                    Clicked="ColorPreviewButton_Clicked"
+                    Background="#FF6B5B" />
+            </StackPanel>
+        </Grid>
+
+        <!-- RGBA Sliders -->
+        <StackPanel Spacing="8">
+            <!-- Red Slider -->
+            <StackPanel Spacing="4">
+                <Grid ColumnDefinitions="40,*,40">
+                    <TextBlock Text="R:" VerticalAlignment="Center" />
+                    <Slider 
+                        Grid.Column="1"
+                        x:Name="RedSlider"
+                        Minimum="0"
+                        Maximum="255"
+                        Value="255"
+                        ValueChanged="RedSlider_ValueChanged"
+                        Margin="8,0" />
+                    <TextBlock 
+                        Grid.Column="2"
+                        x:Name="RedValue"
+                        Text="255"
+                        TextAlignment="Right"
+                        VerticalAlignment="Center" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Green Slider -->
+            <StackPanel Spacing="4">
+                <Grid ColumnDefinitions="40,*,40">
+                    <TextBlock Text="G:" VerticalAlignment="Center" />
+                    <Slider 
+                        Grid.Column="1"
+                        x:Name="GreenSlider"
+                        Minimum="0"
+                        Maximum="255"
+                        Value="255"
+                        ValueChanged="GreenSlider_ValueChanged"
+                        Margin="8,0" />
+                    <TextBlock 
+                        Grid.Column="2"
+                        x:Name="GreenValue"
+                        Text="255"
+                        TextAlignment="Right"
+                        VerticalAlignment="Center" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Blue Slider -->
+            <StackPanel Spacing="4">
+                <Grid ColumnDefinitions="40,*,40">
+                    <TextBlock Text="B:" VerticalAlignment="Center" />
+                    <Slider 
+                        Grid.Column="1"
+                        x:Name="BlueSlider"
+                        Minimum="0"
+                        Maximum="255"
+                        Value="255"
+                        ValueChanged="BlueSlider_ValueChanged"
+                        Margin="8,0" />
+                    <TextBlock 
+                        Grid.Column="2"
+                        x:Name="BlueValue"
+                        Text="255"
+                        TextAlignment="Right"
+                        VerticalAlignment="Center" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Alpha Slider -->
+            <StackPanel Spacing="4">
+                <Grid ColumnDefinitions="40,*,40">
+                    <TextBlock Text="A:" VerticalAlignment="Center" />
+                    <Slider 
+                        Grid.Column="1"
+                        x:Name="AlphaSlider"
+                        Minimum="0"
+                        Maximum="255"
+                        Value="255"
+                        ValueChanged="AlphaSlider_ValueChanged"
+                        Margin="8,0" />
+                    <TextBlock 
+                        Grid.Column="2"
+                        x:Name="AlphaValue"
+                        Text="255"
+                        TextAlignment="Right"
+                        VerticalAlignment="Center" />
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

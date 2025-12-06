@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DZModForger.Controls.Vector3InputControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="300"
+    Height="Auto">
+
+    <StackPanel Spacing="8">
+        <TextBlock 
+            x:Name="LabelText"
+            Text="Vector3" 
+            FontSize="12"
+            FontWeight="SemiBold"
+            Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+
+        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4">
+            <!-- X Value -->
+            <StackPanel Spacing="2">
+                <TextBlock Text="X:" FontSize="11" Opacity="0.7" />
+                <TextBox 
+                    x:Name="XInput"
+                    PlaceholderText="0.00"
+                    TextChanged="XInput_TextChanged"
+                    TextAlignment="Right"
+                    Padding="8,6" />
+            </StackPanel>
+
+            <!-- Y Value -->
+            <StackPanel Grid.Column="1" Spacing="2">
+                <TextBlock Text="Y:" FontSize="11" Opacity="0.7" />
+                <TextBox 
+                    x:Name="YInput"
+                    PlaceholderText="0.00"
+                    TextChanged="YInput_TextChanged"
+                    TextAlignment="Right"
+                    Padding="8,6" />
+            </StackPanel>
+
+            <!-- Z Value -->
+            <StackPanel Grid.Column="2" Spacing="2">
+                <TextBlock Text="Z:" FontSize="11" Opacity="0.7" />
+                <TextBox 
+                    x:Name="ZInput"
+                    PlaceholderText="0.00"
+                    TextChanged="ZInput_TextChanged"
+                    TextAlignment="Right"
+                    Padding="8,6" />
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>

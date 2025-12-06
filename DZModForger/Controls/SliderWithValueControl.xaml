@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DZModForger.Controls.SliderWithValueControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="300"
+    Height="Auto">
+
+    <StackPanel Spacing="6">
+        <Grid ColumnDefinitions="*,60">
+            <TextBlock 
+                x:Name="LabelText"
+                Text="Value"
+                FontSize="12"
+                FontWeight="SemiBold"
+                VerticalAlignment="Center" />
+
+            <TextBlock 
+                Grid.Column="1"
+                x:Name="ValueDisplay"
+                Text="0.00"
+                FontSize="12"
+                TextAlignment="Right"
+                VerticalAlignment="Center" />
+        </Grid>
+
+        <Grid ColumnDefinitions="*,70" ColumnSpacing="8">
+            <Slider 
+                x:Name="MainSlider"
+                Minimum="0"
+                Maximum="100"
+                Value="0"
+                ValueChanged="MainSlider_ValueChanged"
+                StepFrequency="1" />
+
+            <TextBox 
+                Grid.Column="1"
+                x:Name="ValueInput"
+                PlaceholderText="0.00"
+                TextChanged="ValueInput_TextChanged"
+                TextAlignment="Right"
+                Padding="8,6" />
+        </Grid>
+    </StackPanel>
+</UserControl>
