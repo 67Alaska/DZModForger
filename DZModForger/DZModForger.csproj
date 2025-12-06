@@ -77,6 +77,9 @@
     <Folder Include="1.19 Documentation\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DXEngine\DXEngine.vcxproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="1.1 Views\ModelHierarchyPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
