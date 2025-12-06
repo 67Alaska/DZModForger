@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>accd3aa8-1ba0-4223-9bbe-0c431709210b</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{926ab91d-31b4-48c3-b9a4-e681349f27f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine">
+      <UniqueIdentifier>{e150c4db-6607-4c9f-b63c-f884f055324f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Core">
+      <UniqueIdentifier>{2a097ed7-62ee-48b6-a888-30e8af5f194f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Interop">
+      <UniqueIdentifier>{d6f852f1-a6d8-4e8b-b2bc-6791f3eed132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Shaders">
+      <UniqueIdentifier>{c8804d38-68ec-480b-a47b-d2925121160a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Core\FBX">
+      <UniqueIdentifier>{c5916a52-84f7-440f-933e-82447cf07d9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Core\FBX\Import/Export">
+      <UniqueIdentifier>{9157c299-4c1f-4223-8a56-4e48ac9e7d46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Precompiled">
+      <UniqueIdentifier>{02b2fd41-6747-4c7f-a5d0-26c525eac560}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Core\FBX\Data">
+      <UniqueIdentifier>{41b73cd3-6410-48cf-af72-766bdd30798b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Core\Grid">
+      <UniqueIdentifier>{e8ebc224-6e30-43a8-90a9-3c403e8807de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXEngine\Properties">
+      <UniqueIdentifier>{f24b68f6-223b-40e3-b3ee-27098c8abba8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Class.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="FbxModelData.cpp">
+      <Filter>DXEngine\Core\FBX\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxImporter.cpp">
+      <Filter>DXEngine\Core\FBX\Import/Export</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxExporter.cpp">
+      <Filter>DXEngine\Core\FBX\Import/Export</Filter>
+    </ClCompile>
+    <ClCompile Include="GridRenderer.cpp">
+      <Filter>DXEngine\Core\Grid</Filter>
+    </ClCompile>
+    <ClCompile Include="DXEngineInterop.cpp">
+      <Filter>DXEngine\Interop</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>DXEngine\Precompiled</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FbxModelData.h">
+      <Filter>DXEngine\Core\FBX\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxImporter.h">
+      <Filter>DXEngine\Core\FBX\Import/Export</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxExporter.h">
+      <Filter>DXEngine\Core\FBX\Import/Export</Filter>
+    </ClInclude>
+    <ClInclude Include="GridRenderer.h">
+      <Filter>DXEngine\Core\Grid</Filter>
+    </ClInclude>
+    <ClInclude Include="GridData.h">
+      <Filter>DXEngine\Core\Grid</Filter>
+    </ClInclude>
+    <ClInclude Include="DXEngineInterop.h">
+      <Filter>DXEngine\Interop</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>DXEngine\Precompiled</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DXEngine.def" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PropertySheet.props" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="GridShaders.hlsl">
+      <Filter>DXEngine\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ModelShaders.hlsl">
+      <Filter>DXEngine\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="UtilityShaders.hlsl">
+      <Filter>DXEngine\Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="DXEngine.idl">
+      <Filter>DXEngine</Filter>
+    </Midl>
+  </ItemGroup>
+</Project>

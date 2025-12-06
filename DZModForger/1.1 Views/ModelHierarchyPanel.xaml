@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DZModForger.ModelHierarchyPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid RowDefinitions="Auto,*">
+        <CommandBar Grid.Row="0" DefaultLabelPosition="Right">
+            <AppBarButton Icon="Add" Label="Add" />
+            <AppBarButton Icon="Delete" Label="Delete" />
+            <AppBarButton Icon="Refresh" Label="Refresh" />
+        </CommandBar>
+
+        <TreeView Grid.Row="1" 
+            Padding="8"
+            ItemsSource="{Binding ModelHierarchy}"
+            SelectionChanged="TreeView_SelectionChanged">
+
+            <TreeView.ItemTemplate>
+                <DataTemplate x:DataType="local:ModelNode">
+                    <TreeViewItem 
+                        ItemsSource="{x:Bind Children}"
+                        IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}">
+
+                        <Grid Padding="4" ColumnDefinitions="24,*">
+                            <TextBlock Grid.Column="0" Text="📦" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind Name}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                        </Grid>
+                    </TreeViewItem>
+                </DataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</UserControl>

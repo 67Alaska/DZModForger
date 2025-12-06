@@ -13,15 +13,20 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Page Remove="1.1 Views\ModelHierarchyPanel.xaml" />
+    <Page Remove="1.1 Views\PropertiesPanel.xaml" />
+    <Page Remove="1.1 Views\ViewportControl.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="1.16 Assets\SplashScreen.scale-200.png" />
+    <Content Include="1.16 Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="1.16 Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="1.16 Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="1.16 Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="1.16 Assets\StoreLogo.png" />
+    <Content Include="1.16 Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,11 +42,12 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
     <PackageReference Include="Vortice.Direct3D12" Version="3.8.1" />
     <PackageReference Include="Vortice.DXGI" Version="3.8.1" />
-    <PackageReference Include="Vortice.Mathematics" Version="2.0.0" />
     <PackageReference Include="Vortice.WinUI" Version="3.8.1" />
   </ItemGroup>
 
@@ -61,4 +67,24 @@
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="1.11 Services\" />
+    <Folder Include="1.12 Models\" />
+    <Folder Include="1.14 Controls\" />
+    <Folder Include="1.15 Converters\" />
+    <Folder Include="1.17 Utilites\" />
+    <Folder Include="1.18 Behaviors\" />
+    <Folder Include="1.19 Documentation\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="1.1 Views\ModelHierarchyPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="1.1 Views\PropertiesPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="1.1 Views\ViewportControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
 </Project>

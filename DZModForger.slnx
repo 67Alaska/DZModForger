@@ -1,10 +1,13 @@
 <Solution>
   <Configurations>
+    <Platform Name="ARM" />
     <Platform Name="ARM64" />
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="DXEngine/DXEngine.vcxproj" Id="5c06d2c3-6ff3-4929-8525-8b21979fc815" />
   <Project Path="DZModForger/DZModForger.csproj">
+    <Platform Solution="*|ARM" Project="x64" />
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="*|x86" Project="x86" />

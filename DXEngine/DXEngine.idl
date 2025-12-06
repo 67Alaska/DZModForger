@@ -1,0 +1,66 @@
+namespace DXEngine
+{
+    struct Vertex
+    {
+        Single X;
+        Single Y;
+        Single Z;
+        Single NX;
+        Single NY;
+        Single NZ;
+        Single U;
+        Single V;
+    };
+
+    struct Material
+    {
+        String Name;
+        Single[] DiffuseColor;      // RGBA
+        Single[] SpecularColor;     // RGBA
+        Single Shininess;
+        String TexturePath;
+    };
+
+    struct Mesh
+    {
+        String Name;
+        Vertex[] Vertices;
+        UInt32[] Indices;
+        UInt32 MaterialIndex;
+    };
+
+    struct Model
+    {
+        String FilePath;
+        String FileName;
+        Mesh[] Meshes;
+        Material[] Materials;
+        Single[] BoundingBoxMin;    // XYZ
+        Single[] BoundingBoxMax;    // XYZ
+    };
+
+    runtimeclass FbxModelImporter
+    {
+        FbxModelImporter();
+
+        Model LoadModel(String filePath);
+        void UnloadModel();
+        Boolean IsModelLoaded{ get; };
+        String GetLastError();
+    };
+
+    runtimeclass FbxModelExporter
+    {
+        FbxModelExporter();
+
+        void ExportModel(
+            String outputPath,
+            Mesh[] meshes,
+            Material[] materials,
+            Boolean exportNormals,
+            Boolean exportUVs,
+            Boolean exportMaterials
+        );
+        String GetLastError();
+    };
+}

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="DZModForger.MainWindow"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DZModForger"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="DZModForger">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- MenuBar -->
+        <MenuBar Grid.Row="0">
+            <MenuBarItem Title="File">
+                <MenuFlyoutItem Text="Import FBX" Icon="OpenFile" Command="{Binding ImportCommand}" InputGestureText="Ctrl+O" />
+                <MenuFlyoutItem Text="Export FBX" Icon="Save" Command="{Binding ExportCommand}" InputGestureText="Ctrl+S" />
+                <MenuFlyoutItem Text="Recent Files" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Text="Exit" InputGestureText="Alt+F4" />
+            </MenuBarItem>
+
+            <MenuBarItem Title="Edit">
+                <MenuFlyoutItem Text="Delete" Command="{Binding DeleteCommand}" InputGestureText="Del" />
+                <MenuFlyoutItem Text="Duplicate" InputGestureText="Ctrl+D" />
+                <MenuFlyoutItem Text="Clear Scene" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Text="Undo" InputGestureText="Ctrl+Z" />
+                <MenuFlyoutItem Text="Redo" InputGestureText="Ctrl+Y" />
+            </MenuBarItem>
+
+            <MenuBarItem Title="View">
+                <MenuFlyoutItem Text="Reset Camera" InputGestureText="Home" />
+                <MenuFlyoutItem Text="Fit to View" InputGestureText="V" />
+                <MenuFlyoutItem Text="Grid" InputGestureText="G" />
+                <MenuFlyoutItem Text="Axes" InputGestureText="A" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Text="Wireframe" InputGestureText="Z" />
+                <MenuFlyoutItem Text="Solid" />
+                <MenuFlyoutItem Text="Material Preview" />
+            </MenuBarItem>
+
+            <MenuBarItem Title="Help">
+                <MenuFlyoutItem Text="About DZModForger" />
+                <MenuFlyoutItem Text="Documentation" />
+                <MenuFlyoutItem Text="Keyboard Shortcuts" />
+            </MenuBarItem>
+        </MenuBar>
+
+        <!-- ToolBar -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Padding="12" Spacing="8" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Button Content="📂 Import" Command="{Binding ImportCommand}" Padding="12,8" />
+            <Button Content="💾 Export" Command="{Binding ExportCommand}" Padding="12,8" />
+            <Button Content="🗑️ Delete" Command="{Binding DeleteCommand}" Padding="12,8" />
+            <Separator Width="1" Margin="4" />
+            <Button Content="🔄 Reset Camera" Padding="12,8" />
+            <Button Content="⚙️ Settings" Padding="12,8" />
+        </StackPanel>
+
+        <!-- Main Content Grid (3 Columns: Hierarchy | Viewport | Properties) -->
+        <Grid Grid.Row="2" ColumnDefinitions="250,*,300">
+
+            <!-- Column 0: Model Hierarchy Panel -->
+            <Grid Grid.Column="0" BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Text="Model Hierarchy" Padding="12,8" FontWeight="Bold" FontSize="14" />
+                    <TreeView Grid.Row="1" Padding="8" ItemsSource="{Binding ModelHierarchy}">
+                        <TreeView.ItemTemplate>
+                            <DataTemplate x:DataType="local:ModelNode">
+                                <Grid Padding="4">
+                                    <TextBlock Text="{x:Bind Name}" />
+                                </Grid>
+                            </DataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </Grid>
+            </Grid>
+
+            <!-- Column 1: Main Viewport -->
+            <Grid Grid.Column="1" Background="#1a1a1a" local:ViewportControl x:Name="ViewportPanel" />
+
+            <!-- Column 2: Properties Inspector Panel -->
+            <Grid Grid.Column="2" BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" BorderThickness="1,0,0,0">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Text="Properties" Padding="12,8" FontWeight="Bold" FontSize="14" />
+
+                    <ScrollViewer Grid.Row="1">
+                        <StackPanel Padding="12" Spacing="12">
+
+                            <!-- Transform Section -->
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Transform" FontWeight="SemiBold" FontSize="12" Foreground="#32a8c6" />
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Position" FontSize="11" />
+                                    <Grid ColumnDefinitions="*,*,*" Spacing="4">
+                                        <TextBox PlaceholderText="X" />
+                                        <TextBox PlaceholderText="Y" Grid.Column="1" />
+                                        <TextBox PlaceholderText="Z" Grid.Column="2" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Rotation" FontSize="11" />
+                                    <Grid ColumnDefinitions="*,*,*" Spacing="4">
+                                        <TextBox PlaceholderText="X" />
+                                        <TextBox PlaceholderText="Y" Grid.Column="1" />
+                                        <TextBox PlaceholderText="Z" Grid.Column="2" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Scale" FontSize="11" />
+                                    <Grid ColumnDefinitions="*,*,*" Spacing="4">
+                                        <TextBox PlaceholderText="X" />
+                                        <TextBox PlaceholderText="Y" Grid.Column="1" />
+                                        <TextBox PlaceholderText="Z" Grid.Column="2" />
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Material Section -->
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Material" FontWeight="SemiBold" FontSize="12" Foreground="#32a8c6" />
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Diffuse Color" FontSize="11" />
+                                    <Grid ColumnDefinitions="*,40" Spacing="4">
+                                        <TextBox PlaceholderText="Color" />
+                                        <Button Grid.Column="1" Content="●" Background="#FF6B5B" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Specular Color" FontSize="11" />
+                                    <Grid ColumnDefinitions="*,40" Spacing="4">
+                                        <TextBox PlaceholderText="Color" />
+                                        <Button Grid.Column="1" Content="●" Background="#FFFFFF" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Shininess" FontSize="11" />
+                                    <Slider Minimum="0" Maximum="100" Value="32" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Alpha" FontSize="11" />
+                                    <Slider Minimum="0" Maximum="1" Value="1" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Rendering Options -->
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Display" FontWeight="SemiBold" FontSize="12" Foreground="#32a8c6" />
+
+                                <CheckBox Content="Show Wireframe" />
+                                <CheckBox Content="Show Normals" />
+                                <CheckBox Content="Show Tangents" />
+                                <CheckBox Content="Smooth Shading" IsChecked="True" />
+                            </StackPanel>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+
+        </Grid>
+
+        <!-- StatusBar -->
+        <Border Grid.Row="3" BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" BorderThickness="0,1,0,0" Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
+            <Grid Padding="12,8" ColumnDefinitions="*,200,200,200">
+                <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" FontSize="12" />
+                <TextBlock Grid.Column="1" Text="{Binding FpsDisplay}" TextAlignment="Right" FontSize="12" />
+                <TextBlock Grid.Column="2" Text="{Binding TriangleCount}" TextAlignment="Right" FontSize="12" />
+                <TextBlock Grid.Column="3" Text="{Binding VertexCount}" TextAlignment="Right" FontSize="12" />
+            </Grid>
+        </Border>
+
+    </Grid>
+</Window>
